@@ -1,0 +1,16 @@
+{
+  "name": "ai-work-human-futures",
+  "version": "3.0.0",
+  "private": true,
+  "description": "A static, offline educational AI and work scenario lab.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/model.test.cjs",
+    "test:browser": "node tests/browser.cjs",
+    "serve": "node scripts/serve.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

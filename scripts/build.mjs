@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8').replace(/^\uFEFF/,'');
+let html=read('src/template.html');
+const styles=read('src/style.css')+'\n'+read('src/refinements.css');
+const charts=read('src/charts.js').replace('/*__SENSITIVITY__*/','').replace('/*__OUTCOME_CONTROLS__*/','');
+const app=read('src/app.js').replace('/*__CHARTS__*/',charts);
+const scripts=['model','data','career'].map(n=>read('src/'+n+'.js')).join('\n')+'\n'+app;
+html=html.replace('/*__STYLES__*/',()=>styles).replace('<!--__CAREER__-->',()=>read('src/sections.html')).replace('<!--__EVIDENCE__-->','').replace('<!--__GLOSSARY__-->','').replace('/*__SCRIPTS__*/',()=>scripts);
+if(/__STYLES__|__SCRIPTS__|__CHARTS__|__CAREER__/.test(html))throw Error('Unresolved build marker');
+for(const file of ['index.html','ai-work-human-futures-offline.html'])fs.writeFileSync(path.join(root,file),html);
+console.log('Built static index.html and identical self-contained offline HTML ('+Buffer.byteLength(html)+' bytes each).');

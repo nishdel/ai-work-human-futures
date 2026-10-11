@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI, Work & Human Futures — Interactive Scenario Lab</title>
+<meta name="description" content="An offline, interactive scenario model for AI capability, domain automation, human labor demand, social outcomes, and preparation." />
+<link rel="icon" href="data:," />
+<style>/*__STYLES__*/</style>
+</head>
+<body>
+<div id="tooltip" class="tooltip"></div>
+<div id="loading" class="loading" aria-live="polite">Updating scenario…</div>
+<div id="app-error" class="app-error" role="alert"><b>The simulator hit an error.</b> <span id="app-error-text">Reload the page or use Reset.</span></div>
+
+<header class="hero shell">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Interactive scenario model • 2026–2100</div>
+      <h1>AI, work & human futures</h1>
+      <p class="subhead">Explore when AI could automate different domains, what prevents “all-domain takeover,” how post-labor societies could diverge, and which preparations remain useful across radically different futures.</p>
+      <div class="hero-actions">
+        <button class="btn primary" data-scroll="#timeline-section">Explore the timeline</button>
+        <button class="btn" data-scroll="#outcomes-section">Model human outcomes</button>
+        <button class="btn" data-scroll="#prepare-section">See preparation plan</button>
+      </div>
+    </div>
+    <div class="hero-note">
+      <strong>Important definition:</strong> this model explores whether less human labor might be required for economic production under different assumptions. It does <em>not</em> imply that people lose moral worth, agency, relationships, or purpose.
+    </div>
+  </div>
+</header>
+
+<nav class="top-nav">
+  <div class="shell top-nav-inner">
+    <a href="#overview">Overview</a>
+    <a href="#global-curve">Global curve</a>
+    <a href="#timeline-section">Domains</a>
+    <a href="#sensitivity-section">Key drivers</a>
+    <a href="#outcomes-section">After labor</a>
+    <a href="#prepare-section">Preparation</a>
+    <a href="#methods-section">Method & sources</a>
+  </div>
+</nav>
+
+<div class="shell layout">
+  <aside class="sidebar">
+    <div class="panel control-panel">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Scenario engine</div>
+          <h3>Change the assumptions</h3>
+          <p>These are relative assumption settings, not percentages of probability or measured capability.</p>
+        </div>
+      </div>
+
+      <div class="preset-grid" id="preset-grid">
+        <button class="preset active" data-preset="central">Central continuation</button>
+        <button class="preset" data-preset="bottlenecked">Bottlenecked progress</button>
+        <button class="preset" data-preset="rapid">Rapid recursive progress</button>
+        <button class="preset" data-preset="robotics">Robotics breakthrough</button>
+        <button class="preset" data-preset="human">Human-centered adoption</button>
+        <button class="preset" data-preset="replacement">Pure replacement race</button>
+      </div>
+
+      <div class="control-group">
+        <h4>Capabilities</h4>
+        <div class="control">
+          <div class="control-head"><label for="capability">Cognitive capability pace</label><span id="capability-value" class="value-pill"></span></div>
+          <input id="capability" type="range" min="0" max="100" step="1" />
+          <small>Reasoning, coding, planning, multimodal understanding.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="reliability">Reliability & long-horizon autonomy</label><span id="reliability-value" class="value-pill"></span></div>
+          <input id="reliability" type="range" min="0" max="100" step="1" />
+          <small>Error recovery, verification, and sustained task execution.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="feedback">AI-assisted AI R&D feedback</label><span id="feedback-value" class="value-pill"></span></div>
+          <input id="feedback" type="range" min="0" max="100" step="1" />
+          <small>How strongly AI accelerates the next generation of AI.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="compute">Compute, energy & data buildout</label><span id="compute-value" class="value-pill"></span></div>
+          <input id="compute" type="range" min="0" max="100" step="1" />
+          <small>Chips, power, data centers, efficient algorithms, training data.</small>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h4>Physical world</h4>
+        <div class="control">
+          <div class="control-head"><label for="robotics">Robotics & embodiment pace</label><span id="robotics-value" class="value-pill"></span></div>
+          <input id="robotics" type="range" min="0" max="100" step="1" />
+          <small>Dexterity, mobility, perception, hardware cost, field reliability.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="supply">Resource & supply constraints</label><span id="supply-value" class="value-pill"></span></div>
+          <input id="supply" type="range" min="0" max="100" step="1" />
+          <small>Higher means tighter chips, grids, factories, materials, and capital.</small>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h4>Economy & institutions</h4>
+        <div class="control">
+          <div class="control-head"><label for="adoption">Deployment & integration speed</label><span id="adoption-value" class="value-pill"></span></div>
+          <input id="adoption" type="range" min="0" max="100" step="1" />
+          <small>Enterprise integration, process redesign, training, and investment.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="regulation">Regulation, liability & trust friction</label><span id="regulation-value" class="value-pill"></span></div>
+          <input id="regulation" type="range" min="0" max="100" step="1" />
+          <small>Higher slows deployment most in medicine, law, infrastructure, and government.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="humanPref">Demand for human presence & legitimacy</label><span id="humanPref-value" class="value-pill"></span></div>
+          <input id="humanPref" type="range" min="0" max="100" step="1" />
+          <small>Care, teaching, leadership, accountability, culture, and status roles.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="newTasks">Creation of new human tasks</label><span id="newTasks-value" class="value-pill"></span></div>
+          <input id="newTasks" type="range" min="0" max="100" step="1" />
+          <small>New jobs and optional services that appear as old work disappears.</small>
+        </div>
+      </div>
+
+      <div class="sidebar-actions hero-actions">
+        <button class="btn small primary" id="recalculate-btn">Apply / recalculate</button>
+        <button class="btn small" id="export-btn">Backup / share</button>
+        <button class="btn small" id="import-btn">Import file</button>
+        <button class="btn small" id="reset-btn">Reset</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden />
+      </div>
+      <div id="update-status" class="status-line" aria-live="polite">Updating scenario…</div>
+      <div class="privacy">Runs entirely in your browser. Entered profile answers are not transmitted. The hosting provider may receive ordinary request metadata.</div>
+    </div>
+  </aside>
+
+  <main class="main"><div class="notice"><b>Educational model, not a forecast.</b> Capability, deployment, remaining work and human welfare are different. Model-generated 10–90% bands are not validated forecast coverage. “Not by 2100” does not mean never.</div>
+    <section id="overview" class="summary-grid">
+      <div class="panel metric-card">
+        <div class="metric-label">Majority of current work-hours automated</div>
+        <div id="metric-majority" class="metric-value">—</div>
+        <div id="metric-majority-range" class="metric-range">—</div>
+        <div class="metric-note">Weighted across the 15 modeled domains.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">Post-labor-like threshold</div>
+        <div id="metric-postlabor" class="metric-value">—</div>
+        <div id="metric-postlabor-range" class="metric-range">—</div>
+        <div class="metric-note">Net human labor demand below 25% of 2026 hours, including new tasks.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">All-domain technical capability</div>
+        <div id="metric-alltech" class="metric-value">—</div>
+        <div id="metric-alltech-range" class="metric-range">—</div>
+        <div class="metric-note">Every domain reaches at least 80% technical substitutability.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">Strict actual all-domain takeover</div>
+        <div id="metric-allactual" class="metric-value">—</div>
+        <div id="metric-allactual-range" class="metric-range">—</div>
+        <div class="metric-note">Every domain actually substitutes at least 80% of current work.</div>
+      </div>
+    </section>
+
+    <section id="global-curve" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Global transition curve</div>
+          <h2>Capability is only one layer</h2>
+          <p>The model separates technical capability, actual economic substitution, and remaining human labor demand.</p>
+        </div>
+        <div class="chart-toolbar">
+          <button class="btn small" id="print-btn">Print scenario / PDF</button>
+        </div>
+      </div>
+      <div id="global-chart" class="chart-wrap"></div>
+      <div id="chart-readout" class="chart-readout" aria-live="polite"><span>Tap or move across the chart to inspect a year.</span></div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch band"></span>Model-generated 10–90% band</span>
+        <span class="legend-item"><span class="legend-swatch"></span>Actual substitution of current tasks</span>
+        <span class="legend-item"><span class="legend-swatch tech"></span>Technical substitutability</span>
+        <span class="legend-item"><span class="legend-swatch human"></span>Net human labor demand</span>
+      </div>
+      <div class="notice" style="margin-top:13px"><b>Read this carefully:</b> a 50% task-horizon success rate, a benchmark score, technical automability, adoption, and job loss are different things. The gaps between them are deliberately modeled rather than collapsed into a single “AGI date.”</div>
+    </section>
+
+
+
+    <section id="timeline-section" class="two-col">
+      <div class="panel panel-pad">
+        <div class="section-title">
+          <div>
+            <div class="kicker">Domain timeline</div>
+            <h2>How could different domains change?</h2>
+            <p>Bars show model-generated 10–90% ranges, not validated forecast coverage; dots show the median. Unreached thresholds are censored at 2100.</p>
+          </div>
+          <div class="chart-toolbar">
+            <select id="timeline-metric" aria-label="Timeline metric">
+              <option value="actual">Actual substitution</option>
+              <option value="technical">Technical capability</option>
+            </select>
+            <select id="timeline-threshold" aria-label="Timeline threshold">
+              <option value="0.5">50%</option>
+              <option value="0.8" selected>80%</option>
+              <option value="0.9">90%</option>
+            </select>
+            <select id="timeline-sort" aria-label="Timeline sort">
+              <option value="date">Sort by date</option>
+              <option value="weight">Sort by economic weight</option>
+              <option value="original">Original order</option>
+            </select>
+            <select id="domain-select" aria-label="Select a domain for details"></select>
+          </div>
+        </div>
+        <div id="timeline-chart" class="timeline"></div>
+        <div class="timeline-hint mobile-only">Swipe sideways to inspect the full timeline. Use “Select a domain” above when tapping a row is awkward.</div>
+      </div>
+      <aside id="domain-detail" class="panel domain-detail"></aside>
+    </section>
+
+    <section id="sensitivity-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Sensitivity analysis</div>
+          <h2>What truly changes the answer?</h2>
+          <p>Change one setting at a time to see which assumptions affect the result. The metric and any fallback are identified below.</p>
+        </div>
+      </div>
+      <div id="sensitivity" class="sensitivity-wrap"></div>
+    </section>
+
+    <section id="outcomes-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">After labor</div>
+          <h2>High automation does not determine one social outcome</h2>
+          <p>Ownership, distribution, safety, democracy, and transition capacity decide whether abundance is shared—or power simply concentrates.</p>
+        </div>
+        <div class="chart-toolbar">
+          <button class="btn small outcome-preset" data-outcome-preset="shared">Shared abundance</button>
+          <button class="btn small outcome-preset" data-outcome-preset="concentrated">Concentrated power</button>
+          <button class="btn small outcome-preset" data-outcome-preset="fragile">Fragile transition</button>
+          <button class="btn small outcome-preset" data-outcome-preset="balanced">Balanced</button>
+        </div>
+      </div>
+      <div class="outcome-layout">
+        <div class="outcome-controls" id="outcome-controls"></div>
+        <div>
+          <p class="notice">Heuristic scenario weights, not probabilities of prosperity or catastrophe.</p><div id="outcome-bars" class="outcome-bars"></div>
+          <div id="outcome-narrative" class="outcome-narrative"></div>
+        </div>
+      </div>
+      <p class="privacy">The percentages here are normalized scenario weights generated by transparent heuristics—not measured probabilities or expert forecasts.</p>
+    </section>
+
+    <!--__CAREER__-->
+<!--__EVIDENCE__-->
+<!--__GLOSSARY__-->
+    <section id="methods-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Method, assumptions & sources</div>
+          <h2>What the simulator actually does</h2>
+          <p>It is a transparent stress-test model, not a scientific forecast or a claim of inevitability.</p>
+        </div>
+      </div>
+      <div class="method-grid">
+        <div class="method-box">
+          <h4>Four layers per domain</h4>
+          <ul>
+            <li><b>Cognitive capability:</b> can AI reason, plan, perceive, and use tools?</li>
+            <li><b>Reliability:</b> can it recover from errors and sustain long tasks at acceptable failure rates?</li>
+            <li><b>Embodiment:</b> can hardware act safely in messy physical environments?</li>
+            <li><b>Adoption:</b> do cost, regulation, liability, integration, trust, and demand allow deployment?</li>
+          </ul>
+        </div>
+        <div class="method-box">
+          <h4>Uncertainty model</h4>
+          <p>Technology updates use 240 seeded Monte Carlo paths; cached results are reused. It varies global progress regimes, domain-specific capability dates, robotics, reliability, adoption, and ceiling estimates. The 10–90% bands are uncertainty inside this model only; they do not capture every unknown.</p>
+          <p>Dates after 2030 are especially sensitive to assumptions about scaling limits, AI-assisted R&D, hardware deployment, and institutional response.</p>
+        </div>
+        <div class="method-box">
+          <h4>Definitions</h4>
+          <ul>
+            <li><b>Technical substitutability:</b> share of current tasks machines could perform under favorable deployment.</li>
+            <li><b>Actual substitution:</b> technical capability multiplied by integration, regulation, trust, and human-preference constraints.</li>
+            <li><b>Net human labor demand:</b> unautomated current tasks plus modeled new human tasks.</li>
+            <li><b>Post-labor-like:</b> below 25% of 2026 human hours—not zero work and not zero purpose.</li>
+          </ul>
+        </div>
+        <div class="method-box">
+          <h4>Major omissions</h4>
+          <p>The simulator does not explicitly model wars, pandemics, climate shocks, national divergence, demographic change, model theft, radical new architectures, or a single catastrophic discontinuity. Those can dominate the result. It also uses illustrative global work-hour weights rather than an official employment forecast.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:22px">Domain assumptions</h3>
+      <div class="table-wrap">
+        <table class="assumption-table">
+          <thead><tr><th>Domain</th><th>Weight</th><th>Digital</th><th>Embodied</th><th>Regulation</th><th>Human-presence preference</th><th>Base cognitive midpoint</th><th>Base robot midpoint</th></tr></thead>
+          <tbody id="assumption-body"></tbody>
+        </table>
+      </div>
+
+      <h3 style="margin-top:22px">Published context, not numerical calibration</h3>
+      <div id="sources" class="sources"></div>
+    </section>
+  </main>
+</div>
+
+
+<div id="json-panel" class="json-panel" role="dialog" aria-modal="true" aria-labelledby="json-title">
+  <div class="json-card">
+    <h3 id="json-title">Scenario backup and import</h3>
+    <p>Copy this JSON, download it, or paste a previously exported scenario and press “Import pasted JSON”. This fallback works even when an in-app browser blocks downloads.</p>
+    <label class="checkline"><input id="export-profile" type="checkbox"> Include my career profile and answers (contains personal information)</label><textarea id="json-text" spellcheck="false" aria-label="Scenario JSON"></textarea>
+    <div class="json-actions">
+      <button class="btn small primary" id="copy-json-btn">Copy JSON</button>
+      <button class="btn small" id="download-json-btn">Download JSON</button>
+      <button class="btn small" id="import-json-btn">Import pasted JSON</button>
+      <button class="btn small" id="close-json-btn">Close</button>
+    </div>
+    <div id="json-status" class="status-line" aria-live="polite"></div>
+  </div>
+</div>
+
+<footer class="shell footer">
+  AI, Work &amp; Human Futures · Model 3.0.0 · Career method 1.0.0 · Evidence snapshot 11 October 2026. Automatic updates disabled. <a href="#methods-section">Method &amp; attribution</a>. Code: MIT; O*NET-derived descriptions: CC BY 4.0.
+</footer><noscript><p class="notice">Enable JavaScript to run the local simulator.</p></noscript>
+
+
+<script>/*__SCRIPTS__*/</script>
+</body>
+</html>

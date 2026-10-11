@@ -1,0 +1,1580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI, Work & Human Futures — Interactive Scenario Lab</title>
+<meta name="description" content="An offline, interactive scenario model for AI capability, domain automation, human labor demand, social outcomes, and preparation." />
+<link rel="icon" href="data:," />
+<style>
+  :root {
+    --bg: #071016;
+    --bg2: #0a141c;
+    --panel: #0d1a23;
+    --panel2: #10232d;
+    --panel3: #142b36;
+    --text: #eef9f6;
+    --muted: #91a8b0;
+    --faint: #5f7780;
+    --line: #203945;
+    --accent: #5ee2c0;
+    --accent2: #a891ff;
+    --blue: #69bfff;
+    --amber: #ffd07b;
+    --danger: #ff8297;
+    --good: #76e39a;
+    --shadow: 0 18px 55px rgba(0,0,0,.28);
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(94,226,192,.09), transparent 28%),
+      radial-gradient(circle at 90% 10%, rgba(168,145,255,.10), transparent 26%),
+      linear-gradient(180deg, var(--bg), #061018 70%, #050c12);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.48;
+  }
+  a { color: var(--blue); }
+  button, input, select { font: inherit; }
+  button { color: inherit; }
+  .shell { width: min(1560px, calc(100% - 28px)); margin: 0 auto; }
+  .hero { padding: 34px 0 22px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; color: var(--accent); font-size: .74rem; font-weight: 800; }
+  h1 { font-size: clamp(2rem, 5vw, 4.7rem); line-height: .98; letter-spacing: -.055em; margin: 10px 0 14px; max-width: 980px; }
+  .subhead { color: #bad0d4; max-width: 920px; font-size: clamp(1rem, 1.7vw, 1.23rem); margin: 0; }
+  .hero-note { max-width: 430px; background: rgba(13,26,35,.78); border: 1px solid var(--line); border-radius: var(--radius); padding: 17px 18px; box-shadow: var(--shadow); }
+  .hero-note strong { color: var(--amber); }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .btn {
+    border: 1px solid var(--line);
+    background: #10232d;
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: #3d6674; background: #15303d; }
+  .btn.primary { background: linear-gradient(135deg, rgba(94,226,192,.22), rgba(105,191,255,.18)); border-color: rgba(94,226,192,.52); }
+  .btn.small { padding: 7px 10px; font-size: .84rem; }
+  .top-nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(18px); background: rgba(7,16,22,.78); border-top: 1px solid rgba(255,255,255,.035); border-bottom: 1px solid var(--line); }
+  .top-nav-inner { display: flex; gap: 8px; overflow-x: auto; padding: 9px 0; scrollbar-width: thin; }
+  .top-nav a { text-decoration: none; color: #b7cbd0; border: 1px solid transparent; padding: 7px 11px; border-radius: 999px; white-space: nowrap; font-size: .87rem; }
+  .top-nav a:hover { color: var(--text); border-color: var(--line); background: rgba(16,35,45,.8); }
+  .layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; padding: 22px 0 70px; align-items: start; }
+  .sidebar { position: sticky; top: 62px; max-height: calc(100vh - 76px); overflow: auto; padding-right: 3px; scrollbar-width: thin; }
+  .panel { background: linear-gradient(180deg, rgba(16,35,45,.92), rgba(12,27,36,.92)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  .panel-pad { padding: 20px; }
+  .control-panel { padding: 17px; }
+  .section-title { display: flex; justify-content: space-between; gap: 14px; align-items: start; margin-bottom: 15px; }
+  .section-title h2, .section-title h3 { margin: 0; line-height: 1.15; letter-spacing: -.02em; }
+  .section-title p { margin: 5px 0 0; color: var(--muted); font-size: .9rem; }
+  .kicker { color: var(--accent); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 5px; }
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 16px; }
+  .preset { border: 1px solid var(--line); background: #0b1921; border-radius: 10px; padding: 8px 9px; color: #c7d7da; cursor: pointer; text-align: left; font-size: .8rem; }
+  .preset:hover, .preset.active { border-color: rgba(94,226,192,.65); background: rgba(94,226,192,.08); color: var(--text); }
+  .control-group { border-top: 1px solid var(--line); padding-top: 13px; margin-top: 13px; }
+  .control-group h4 { margin: 0 0 10px; color: #d7e7e8; font-size: .83rem; text-transform: uppercase; letter-spacing: .07em; }
+  .control { margin: 0 0 13px; }
+  .control-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .control label { font-size: .86rem; color: #d5e5e7; font-weight: 650; }
+  .value-pill { min-width: 42px; text-align: center; color: var(--accent); font-variant-numeric: tabular-nums; font-size: .82rem; font-weight: 800; }
+  .control small { display: block; color: var(--faint); font-size: .72rem; margin-top: 2px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 5px; }
+  .main { min-width: 0; display: grid; gap: 18px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+  .metric-card { padding: 17px; min-height: 142px; position: relative; overflow: hidden; }
+  .metric-card::after { content: ""; position: absolute; width: 100px; height: 100px; border-radius: 50%; right: -40px; top: -48px; background: radial-gradient(circle, rgba(94,226,192,.16), transparent 68%); }
+  .metric-label { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; }
+  .metric-value { font-size: clamp(1.55rem, 3vw, 2.5rem); font-weight: 850; letter-spacing: -.045em; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+  .metric-range { color: #b7ccd0; font-size: .83rem; }
+  .metric-note { color: var(--faint); font-size: .73rem; margin-top: 8px; }
+  .chart-wrap { min-height: 360px; position: relative; }
+  .chart-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .chart-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  select { background: #0b1921; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .legend { display: flex; gap: 15px; flex-wrap: wrap; color: var(--muted); font-size: .78rem; margin-top: 7px; }
+  .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+  .legend-swatch { width: 22px; height: 3px; border-radius: 3px; background: var(--accent); }
+  .legend-swatch.band { height: 9px; background: rgba(94,226,192,.18); border: 1px solid rgba(94,226,192,.32); }
+  .legend-swatch.human { background: var(--accent2); }
+  .legend-swatch.tech { background: var(--blue); border-top: 1px dashed var(--blue); }
+  .tooltip { position: fixed; z-index: 50; pointer-events: none; display: none; background: rgba(5,13,18,.95); border: 1px solid #34505b; border-radius: 10px; padding: 9px 10px; color: var(--text); font-size: .78rem; box-shadow: 0 10px 30px rgba(0,0,0,.4); max-width: 260px; }
+  .evidence-strip { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .evidence { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 13px; background: rgba(8,21,28,.7); }
+  .evidence strong { display: block; font-size: 1.05rem; margin-bottom: 4px; }
+  .evidence span { color: var(--muted); font-size: .77rem; }
+  .source-chip { display: inline-block; margin-top: 7px; color: var(--blue); font-size: .72rem; text-decoration: none; }
+  .two-col { display: grid; grid-template-columns: 1.45fr .8fr; gap: 14px; }
+  .timeline { min-height: 650px; overflow-x: auto; }
+  .timeline-row { cursor: pointer; }
+  .timeline-row:hover .row-bg { fill: rgba(94,226,192,.045); }
+  .timeline-row.selected .row-bg { fill: rgba(94,226,192,.085); }
+  .domain-detail { padding: 18px; min-height: 650px; }
+  .domain-detail h3 { margin: 0 0 6px; font-size: 1.35rem; }
+  .domain-detail .desc { color: var(--muted); font-size: .86rem; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+  .tag { background: #0a1820; border: 1px solid var(--line); border-radius: 999px; padding: 5px 8px; font-size: .71rem; color: #b8ccd0; }
+  .mini-stat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin: 14px 0; }
+  .mini-stat { background: rgba(7,18,24,.72); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .mini-stat b { display: block; font-size: 1.15rem; }
+  .mini-stat span { color: var(--muted); font-size: .72rem; }
+  .bottleneck { border-left: 3px solid var(--amber); padding: 10px 11px; background: rgba(255,208,123,.055); color: #d7e2df; border-radius: 0 10px 10px 0; font-size: .82rem; }
+  .factor-list { display: grid; gap: 9px; margin-top: 15px; }
+  .factor-row { display: grid; grid-template-columns: 120px 1fr 38px; gap: 8px; align-items: center; font-size: .74rem; }
+  .bar-track { height: 7px; background: #08151c; border-radius: 999px; overflow: hidden; border: 1px solid #18313c; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue)); border-radius: inherit; }
+  .sensitivity-wrap { min-height: 360px; }
+  .sensitivity-row { display: grid; grid-template-columns: 180px 1fr 58px; gap: 10px; align-items: center; margin: 9px 0; }
+  .sensitivity-label { color: #cbdadd; font-size: .8rem; }
+  .sensitivity-track { position: relative; height: 18px; background: #08151c; border: 1px solid var(--line); border-radius: 999px; }
+  .sensitivity-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: #66808a; }
+  .sens-bar { position: absolute; top: 3px; height: 10px; border-radius: 999px; }
+  .sens-earlier { right: 50%; background: var(--accent); }
+  .sens-later { left: 50%; background: var(--danger); }
+  .sensitivity-value { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .77rem; text-align: right; }
+  .outcome-layout { display: grid; grid-template-columns: 330px minmax(0,1fr); gap: 15px; }
+  .outcome-controls { display: grid; gap: 10px; }
+  .outcome-bars { display: grid; gap: 10px; }
+  .outcome-row { display: grid; grid-template-columns: 190px 1fr 48px; gap: 10px; align-items: center; }
+  .outcome-name { font-size: .82rem; }
+  .outcome-track { height: 15px; background: #07151c; border-radius: 999px; border: 1px solid var(--line); overflow: hidden; }
+  .outcome-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent2), var(--blue)); }
+  .outcome-pct { font-size: .78rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .outcome-narrative { margin-top: 15px; padding: 15px; background: rgba(8,20,27,.72); border: 1px solid var(--line); border-radius: 13px; }
+  .outcome-narrative h4 { margin: 0 0 6px; }
+  .dimension-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px 12px; margin-top: 12px; }
+  .dimension { display: grid; grid-template-columns: 100px 1fr 32px; gap: 7px; align-items: center; font-size: .72rem; }
+  .prep-layout { display: grid; grid-template-columns: 1fr 1.05fr; gap: 15px; }
+  .score-ring { width: 138px; height: 138px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto 16px; background: conic-gradient(var(--accent) calc(var(--score) * 1%), #142833 0); position: relative; }
+  .score-ring::after { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: var(--panel); }
+  .score-ring .inside { z-index: 1; text-align: center; }
+  .score-ring b { display: block; font-size: 2rem; line-height: 1; }
+  .score-ring span { color: var(--muted); font-size: .72rem; }
+  .category-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .category { border: 1px solid var(--line); background: rgba(7,18,24,.7); border-radius: 11px; padding: 10px; }
+  .category b { display: block; }
+  .category span { color: var(--muted); font-size: .71rem; }
+  .priority-list { display: grid; gap: 9px; }
+  .priority { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(8,20,27,.72); }
+  .priority-head { display: flex; justify-content: space-between; gap: 10px; }
+  .priority h4 { margin: 0; font-size: .9rem; }
+  .priority p { color: var(--muted); font-size: .78rem; margin: 6px 0 0; }
+  .priority-rank { color: var(--accent); font-weight: 850; }
+  .no-regret { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 15px; }
+  .no-regret > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: rgba(8,20,27,.7); }
+  .no-regret b { font-size: .82rem; }
+  .no-regret p { margin: 5px 0 0; color: var(--muted); font-size: .74rem; }
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .method-box { border: 1px solid var(--line); border-radius: 13px; padding: 14px; background: rgba(7,18,24,.68); }
+  .method-box h4 { margin: 0 0 8px; }
+  .method-box p, .method-box li { color: var(--muted); font-size: .79rem; }
+  .method-box ul { padding-left: 18px; margin: 8px 0 0; }
+  .assumption-table { width: 100%; border-collapse: collapse; font-size: .73rem; }
+  .assumption-table th, .assumption-table td { padding: 8px 7px; border-bottom: 1px solid var(--line); text-align: left; }
+  .assumption-table th { color: #cfe0e2; position: sticky; top: 0; background: var(--panel); }
+  .assumption-table td { color: var(--muted); }
+  .table-wrap { max-height: 420px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+  .sources { columns: 2; column-gap: 26px; }
+  .source { break-inside: avoid; margin-bottom: 12px; }
+  .source b { display: block; font-size: .8rem; }
+  .source p { color: var(--muted); font-size: .74rem; margin: 3px 0; }
+  .source a { font-size: .72rem; word-break: break-word; }
+  .footer { color: var(--faint); font-size: .75rem; padding: 0 0 36px; }
+  .loading { position: fixed; right: 18px; bottom: 18px; z-index: 60; padding: 9px 12px; border-radius: 999px; background: rgba(5,13,18,.92); border: 1px solid var(--line); color: var(--muted); font-size: .75rem; display: none; }
+  .notice { border: 1px solid rgba(255,208,123,.32); background: rgba(255,208,123,.06); padding: 11px 13px; border-radius: 12px; color: #d8dfd7; font-size: .79rem; }
+  .privacy { color: var(--faint); font-size: .7rem; margin-top: 10px; }
+  @media (max-width: 1180px) {
+    .layout { grid-template-columns: 285px minmax(0,1fr); }
+    .summary-grid { grid-template-columns: repeat(2,1fr); }
+    .evidence-strip { grid-template-columns: repeat(2,1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .domain-detail { min-height: 0; }
+  }
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .layout { display: block; }
+    .sidebar { position: static; max-height: none; margin-bottom: 16px; }
+    .control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .control-panel > .section-title, .control-panel > .preset-grid, .control-panel > .sidebar-actions { grid-column: 1 / -1; }
+    .control-group { margin-top: 0; }
+    .outcome-layout, .prep-layout, .method-grid { grid-template-columns: 1fr; }
+    .sources { columns: 1; }
+  }
+  @media (max-width: 620px) {
+    .shell { width: min(100% - 16px, 1560px); }
+    .hero { padding-top: 24px; }
+    .summary-grid, .evidence-strip, .category-grid, .dimension-grid, .no-regret { grid-template-columns: 1fr; }
+    .control-panel { display: block; }
+    .outcome-row { grid-template-columns: 125px 1fr 42px; }
+    .sensitivity-row { grid-template-columns: 120px 1fr 48px; }
+    .panel-pad { padding: 15px; }
+  }
+  @media print {
+    .top-nav, .sidebar, .hero-actions, .chart-toolbar button, .loading { display: none !important; }
+    body { background: #fff; color: #111; }
+    .layout { display: block; }
+    .panel { box-shadow: none; background: #fff; color: #111; border-color: #bbb; break-inside: avoid; }
+    .main { gap: 10px; }
+  }
+
+  /* v2 reliability and mobile-interaction fixes */
+  button, select, input[type="range"] { touch-action: manipulation; }
+  button, .btn, .preset, select { -webkit-tap-highlight-color: transparent; }
+  section[id] { scroll-margin-top: 76px; }
+  input[type="range"] { min-height: 28px; cursor: pointer; }
+  .outcome-preset.active { border-color: rgba(94,226,192,.72); background: rgba(94,226,192,.12); }
+  .status-line { color: var(--muted); font-size: .72rem; margin-top: 9px; min-height: 1.2em; }
+  .app-error { display: none; position: sticky; top: 0; z-index: 100; margin: 0 auto; width: min(1560px, calc(100% - 20px)); padding: 12px 14px; border: 1px solid rgba(255,130,151,.65); border-radius: 0 0 12px 12px; background: #2b1119; color: #ffe8ec; box-shadow: var(--shadow); }
+  .app-error.show { display: block; }
+  .chart-readout { display: flex; flex-wrap: wrap; gap: 8px 14px; min-height: 38px; align-items: center; margin-top: 7px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(7,18,24,.65); color: var(--muted); font-size: .77rem; }
+  .chart-readout b { color: var(--text); }
+  .timeline-hint { color: var(--faint); font-size: .72rem; margin-top: 7px; }
+  .timeline .chart-svg { max-width: none; }
+  .main > *, .two-col, .two-col > *, .outcome-layout > *, .prep-layout > * { min-width: 0; max-width: 100%; }
+  .timeline { width: 100%; max-width: 100%; }
+  .json-panel { position: fixed; inset: 0; z-index: 120; display: none; place-items: center; padding: 16px; background: rgba(2,8,12,.82); }
+  .json-panel.open { display: grid; }
+  .json-card { width: min(720px, 100%); max-height: min(760px, 92vh); overflow: auto; background: var(--panel); border: 1px solid #34505b; border-radius: 16px; padding: 18px; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+  .json-card h3 { margin: 0 0 6px; }
+  .json-card p { margin: 0 0 12px; color: var(--muted); font-size: .82rem; }
+  .json-card textarea { width: 100%; min-height: 280px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; background: #07131a; color: #dcebec; padding: 11px; font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  .json-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .mobile-only { display: none; }
+  @media (max-width: 860px) {
+    .top-nav { position: static; backdrop-filter: none; }
+    section[id] { scroll-margin-top: 12px; }
+    .section-title { flex-direction: column; align-items: stretch; }
+    .section-title > * { min-width: 0; }
+    .chart-toolbar { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .chart-toolbar > * { width: 100%; min-height: 44px; }
+    .outcome-layout { gap: 20px; }
+    .timeline { min-height: 0; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
+    .mobile-only { display: block; }
+  }
+  @media (max-width: 620px) {
+    .hero-actions, .sidebar-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+    .hero-actions .btn, .sidebar-actions .btn { width: 100%; min-height: 44px; }
+    .hero-actions .btn.primary { grid-column: 1 / -1; }
+    .preset-grid { grid-template-columns: 1fr; }
+    .preset, .btn, select { min-height: 44px; }
+    input[type="range"] { min-height: 38px; margin: 2px 0 0; }
+    .chart-wrap { min-height: 300px; }
+    .chart-toolbar { grid-template-columns: 1fr; }
+    .outcome-row { grid-template-columns: 112px minmax(0,1fr) 38px; gap: 7px; }
+    .outcome-name { font-size: .76rem; }
+    .factor-row { grid-template-columns: 108px minmax(0,1fr) 32px; }
+    .sensitivity-row { grid-template-columns: 104px minmax(0,1fr) 42px; gap: 7px; }
+    .sensitivity-label { font-size: .73rem; }
+    .json-card { padding: 14px; }
+    .json-card textarea { min-height: 230px; }
+    .json-actions { display: grid; grid-template-columns: 1fr 1fr; }
+    .json-actions .btn { width: 100%; }
+  }
+
+
+/* Accessible refinement of the original visual identity. */
+:root { --faint:#9ab0b8; }
+:focus-visible { outline:3px solid var(--amber); outline-offset:4px; }
+details { border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin:10px 0; }
+summary { cursor:pointer; color:#d7e7e9; font-size:.86rem; min-height:28px; }
+details p { color:var(--muted); font-size:.84rem; }
+.control-head { display:block; }
+.control-head label { display:block; }
+.value-pill { display:block; text-align:left; margin:3px 0; font-size:.78rem; }
+.endpoints { display:flex; justify-content:space-between; gap:18px; font-size:.7rem; color:#bed2d7; margin:0 0 5px; }
+.endpoints span { max-width:48%; }
+.endpoints span:last-child { text-align:right; }
+.control small { color:var(--muted); font-size:.76rem; }
+.explain { display:inline-block; font-size:.77rem; padding:6px 0; }
+.preset small,.outcome-preset small { display:block; margin-top:4px; font-size:.7rem; color:var(--muted); font-weight:400; }
+.preset.active small { color:#c0dfd8; }
+#scenario-summary,#scenario-guide,#social-summary { grid-column:1/-1; }
+#scenario-summary h4 { margin:8px 0; }
+#scenario-summary ul { padding-left:18px; font-size:.76rem; color:var(--muted); }
+.profile-fields,.question-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.field { display:flex; flex-direction:column; gap:7px; font-size:.85rem; color:#d5e5e7; margin-bottom:12px; min-width:0; }
+.field select,.field input,.field textarea { width:100%; min-width:0; }
+input[type=number],input[type=text],textarea { font:inherit; background:#091820; border:1px solid #34505b; color:var(--text); border-radius:9px; padding:9px; }
+input[type=checkbox] { accent-color:var(--accent); width:18px; height:18px; flex-shrink:0; }
+.checkline { display:flex; gap:10px; align-items:center; font-size:.86rem; margin:12px 0; }
+.task-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 95px; gap:10px; border-bottom:1px solid var(--line); padding:8px 0; }
+.task-row .field { font-size:.75rem; }
+.task-share { color:var(--accent); font-size:.75rem; }
+.desc { color:var(--muted); }
+.career-results { margin:18px 0; }
+.career-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.career-stat { padding:15px; background:#0a1922; border:1px solid var(--line); border-radius:12px; }
+.career-stat b { display:block; font-size:1.85rem; color:var(--accent); }
+.career-stat span { font-size:.79rem; color:var(--muted); }
+.career-stat small { display:block; color:var(--muted); }
+.score-detail { font-size:.8rem; color:var(--muted); }
+#career-results h3 { margin:20px 0 10px; }
+#career-results ol { padding:0; list-style:none; }
+#career-comparison { margin-top:12px; }
+#note-preview { overflow-wrap:anywhere; white-space:pre-wrap; }
+.evidence-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.evidence-card { padding:14px; border:1px solid var(--line); border-radius:12px; background:#0a1922; }
+.evidence-card h3 { font-size:1rem; margin:8px 0; }
+.evidence-card p { font-size:.8rem; color:var(--muted); }
+.evidence-card .tag { display:inline-block; }
+.method-equations { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.72rem; }
+.glossary-entry { scroll-margin-top:80px; }
+#weight-table table { width:100%; font-size:.78rem; border-collapse:collapse; }
+#weight-table th,#weight-table td { padding:7px; border-bottom:1px solid var(--line); text-align:left; }
+a,button,summary,label { overflow-wrap:break-word; }
+[hidden] { display:none!important; }
+#profile-note { resize:vertical; }
+@media(max-width:1100px) { .evidence-cards { grid-template-columns:1fr; }.career-summary {grid-template-columns:1fr 1fr;} }
+@media(max-width:620px) {
+ .profile-fields,.question-grid,.career-summary {grid-template-columns:1fr;}
+ .task-row {grid-template-columns:minmax(0,1fr) 84px;}
+ .task-row .task-label {grid-column:1/-1;}
+ .outcome-row {grid-template-columns:112px minmax(0,1fr) 40px;}
+ #domain-mini-chart svg {max-width:100%;height:auto!important;}
+ .control-panel > * {min-width:0;}
+}
+@media(prefers-reduced-motion:reduce) { html {scroll-behavior:auto;} * {transition:none!important;} }
+@media print {
+ details {break-inside:auto;}
+ details > * {display:block!important;}
+ summary {font-weight:bold;}
+ .field,.task-row,.checkline,#questionnaire,#optional-questions,#profile-note,#note-preview,#clear-profile {display:none!important;}
+ .career-stat,.evidence-card,.priority {background:#fff;color:#111;}
+ p,span,small,.privacy,.desc,.score-detail,.metric-note,.metric-range {color:#333!important;}
+ .career-stat b {color:#111;}
+ .json-panel {display:none!important;}
+}
+
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+@media print { #prepare-section { display:none!important; } }
+</style>
+</head>
+<body>
+<div id="tooltip" class="tooltip"></div>
+<div id="loading" class="loading" aria-live="polite">Updating scenario…</div>
+<div id="app-error" class="app-error" role="alert"><b>The simulator hit an error.</b> <span id="app-error-text">Reload the page or use Reset.</span></div>
+
+<header class="hero shell">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Interactive scenario model • 2026–2100</div>
+      <h1>AI, work & human futures</h1>
+      <p class="subhead">Explore when AI could automate different domains, what prevents “all-domain takeover,” how post-labor societies could diverge, and which preparations remain useful across radically different futures.</p>
+      <div class="hero-actions">
+        <button class="btn primary" data-scroll="#timeline-section">Explore the timeline</button>
+        <button class="btn" data-scroll="#outcomes-section">Model human outcomes</button>
+        <button class="btn" data-scroll="#prepare-section">See preparation plan</button>
+      </div>
+    </div>
+    <div class="hero-note">
+      <strong>Important definition:</strong> this model explores whether less human labor might be required for economic production under different assumptions. It does <em>not</em> imply that people lose moral worth, agency, relationships, or purpose.
+    </div>
+  </div>
+</header>
+
+<nav class="top-nav">
+  <div class="shell top-nav-inner">
+    <a href="#overview">Overview</a>
+    <a href="#global-curve">Global curve</a>
+    <a href="#timeline-section">Domains</a>
+    <a href="#sensitivity-section">Key drivers</a>
+    <a href="#outcomes-section">After labor</a>
+    <a href="#prepare-section">Preparation</a>
+    <a href="#methods-section">Method & sources</a>
+  </div>
+</nav>
+
+<div class="shell layout">
+  <aside class="sidebar">
+    <div class="panel control-panel">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Scenario engine</div>
+          <h3>Change the assumptions</h3>
+          <p>These are relative assumption settings, not percentages of probability or measured capability.</p>
+        </div>
+      </div>
+
+      <div class="preset-grid" id="preset-grid">
+        <button class="preset active" data-preset="central">Central continuation</button>
+        <button class="preset" data-preset="bottlenecked">Bottlenecked progress</button>
+        <button class="preset" data-preset="rapid">Rapid recursive progress</button>
+        <button class="preset" data-preset="robotics">Robotics breakthrough</button>
+        <button class="preset" data-preset="human">Human-centered adoption</button>
+        <button class="preset" data-preset="replacement">Pure replacement race</button>
+      </div>
+
+      <div class="control-group">
+        <h4>Capabilities</h4>
+        <div class="control">
+          <div class="control-head"><label for="capability">Cognitive capability pace</label><span id="capability-value" class="value-pill"></span></div>
+          <input id="capability" type="range" min="0" max="100" step="1" />
+          <small>Reasoning, coding, planning, multimodal understanding.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="reliability">Reliability & long-horizon autonomy</label><span id="reliability-value" class="value-pill"></span></div>
+          <input id="reliability" type="range" min="0" max="100" step="1" />
+          <small>Error recovery, verification, and sustained task execution.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="feedback">AI-assisted AI R&D feedback</label><span id="feedback-value" class="value-pill"></span></div>
+          <input id="feedback" type="range" min="0" max="100" step="1" />
+          <small>How strongly AI accelerates the next generation of AI.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="compute">Compute, energy & data buildout</label><span id="compute-value" class="value-pill"></span></div>
+          <input id="compute" type="range" min="0" max="100" step="1" />
+          <small>Chips, power, data centers, efficient algorithms, training data.</small>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h4>Physical world</h4>
+        <div class="control">
+          <div class="control-head"><label for="robotics">Robotics & embodiment pace</label><span id="robotics-value" class="value-pill"></span></div>
+          <input id="robotics" type="range" min="0" max="100" step="1" />
+          <small>Dexterity, mobility, perception, hardware cost, field reliability.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="supply">Resource & supply constraints</label><span id="supply-value" class="value-pill"></span></div>
+          <input id="supply" type="range" min="0" max="100" step="1" />
+          <small>Higher means tighter chips, grids, factories, materials, and capital.</small>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h4>Economy & institutions</h4>
+        <div class="control">
+          <div class="control-head"><label for="adoption">Deployment & integration speed</label><span id="adoption-value" class="value-pill"></span></div>
+          <input id="adoption" type="range" min="0" max="100" step="1" />
+          <small>Enterprise integration, process redesign, training, and investment.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="regulation">Regulation, liability & trust friction</label><span id="regulation-value" class="value-pill"></span></div>
+          <input id="regulation" type="range" min="0" max="100" step="1" />
+          <small>Higher slows deployment most in medicine, law, infrastructure, and government.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="humanPref">Demand for human presence & legitimacy</label><span id="humanPref-value" class="value-pill"></span></div>
+          <input id="humanPref" type="range" min="0" max="100" step="1" />
+          <small>Care, teaching, leadership, accountability, culture, and status roles.</small>
+        </div>
+        <div class="control">
+          <div class="control-head"><label for="newTasks">Creation of new human tasks</label><span id="newTasks-value" class="value-pill"></span></div>
+          <input id="newTasks" type="range" min="0" max="100" step="1" />
+          <small>New jobs and optional services that appear as old work disappears.</small>
+        </div>
+      </div>
+
+      <div class="sidebar-actions hero-actions">
+        <button class="btn small primary" id="recalculate-btn">Apply / recalculate</button>
+        <button class="btn small" id="export-btn">Backup / share</button>
+        <button class="btn small" id="import-btn">Import file</button>
+        <button class="btn small" id="reset-btn">Reset</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden />
+      </div>
+      <div id="update-status" class="status-line" aria-live="polite">Updating scenario…</div>
+      <div class="privacy">Runs entirely in your browser. Entered profile answers are not transmitted. The hosting provider may receive ordinary request metadata.</div>
+    </div>
+  </aside>
+
+  <main class="main"><div class="notice"><b>Educational model, not a forecast.</b> Capability, deployment, remaining work and human welfare are different. Model-generated 10–90% bands are not validated forecast coverage. “Not by 2100” does not mean never.</div>
+    <section id="overview" class="summary-grid">
+      <div class="panel metric-card">
+        <div class="metric-label">Majority of current work-hours automated</div>
+        <div id="metric-majority" class="metric-value">—</div>
+        <div id="metric-majority-range" class="metric-range">—</div>
+        <div class="metric-note">Weighted across the 15 modeled domains.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">Post-labor-like threshold</div>
+        <div id="metric-postlabor" class="metric-value">—</div>
+        <div id="metric-postlabor-range" class="metric-range">—</div>
+        <div class="metric-note">Net human labor demand below 25% of 2026 hours, including new tasks.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">All-domain technical capability</div>
+        <div id="metric-alltech" class="metric-value">—</div>
+        <div id="metric-alltech-range" class="metric-range">—</div>
+        <div class="metric-note">Every domain reaches at least 80% technical substitutability.</div>
+      </div>
+      <div class="panel metric-card">
+        <div class="metric-label">Strict actual all-domain takeover</div>
+        <div id="metric-allactual" class="metric-value">—</div>
+        <div id="metric-allactual-range" class="metric-range">—</div>
+        <div class="metric-note">Every domain actually substitutes at least 80% of current work.</div>
+      </div>
+    </section>
+
+    <section id="global-curve" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Global transition curve</div>
+          <h2>Capability is only one layer</h2>
+          <p>The model separates technical capability, actual economic substitution, and remaining human labor demand.</p>
+        </div>
+        <div class="chart-toolbar">
+          <button class="btn small" id="print-btn">Print scenario / PDF</button>
+        </div>
+      </div>
+      <div id="global-chart" class="chart-wrap"></div>
+      <div id="chart-readout" class="chart-readout" aria-live="polite"><span>Tap or move across the chart to inspect a year.</span></div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch band"></span>Model-generated 10–90% band</span>
+        <span class="legend-item"><span class="legend-swatch"></span>Actual substitution of current tasks</span>
+        <span class="legend-item"><span class="legend-swatch tech"></span>Technical substitutability</span>
+        <span class="legend-item"><span class="legend-swatch human"></span>Net human labor demand</span>
+      </div>
+      <div class="notice" style="margin-top:13px"><b>Read this carefully:</b> a 50% task-horizon success rate, a benchmark score, technical automability, adoption, and job loss are different things. The gaps between them are deliberately modeled rather than collapsed into a single “AGI date.”</div>
+    </section>
+
+
+
+    <section id="timeline-section" class="two-col">
+      <div class="panel panel-pad">
+        <div class="section-title">
+          <div>
+            <div class="kicker">Domain timeline</div>
+            <h2>How could different domains change?</h2>
+            <p>Bars show model-generated 10–90% ranges, not validated forecast coverage; dots show the median. Unreached thresholds are censored at 2100.</p>
+          </div>
+          <div class="chart-toolbar">
+            <select id="timeline-metric" aria-label="Timeline metric">
+              <option value="actual">Actual substitution</option>
+              <option value="technical">Technical capability</option>
+            </select>
+            <select id="timeline-threshold" aria-label="Timeline threshold">
+              <option value="0.5">50%</option>
+              <option value="0.8" selected>80%</option>
+              <option value="0.9">90%</option>
+            </select>
+            <select id="timeline-sort" aria-label="Timeline sort">
+              <option value="date">Sort by date</option>
+              <option value="weight">Sort by economic weight</option>
+              <option value="original">Original order</option>
+            </select>
+            <select id="domain-select" aria-label="Select a domain for details"></select>
+          </div>
+        </div>
+        <div id="timeline-chart" class="timeline"></div>
+        <div class="timeline-hint mobile-only">Swipe sideways to inspect the full timeline. Use “Select a domain” above when tapping a row is awkward.</div>
+      </div>
+      <aside id="domain-detail" class="panel domain-detail"></aside>
+    </section>
+
+    <section id="sensitivity-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Sensitivity analysis</div>
+          <h2>What truly changes the answer?</h2>
+          <p>Change one setting at a time to see which assumptions affect the result. The metric and any fallback are identified below.</p>
+        </div>
+      </div>
+      <div id="sensitivity" class="sensitivity-wrap"></div>
+    </section>
+
+    <section id="outcomes-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">After labor</div>
+          <h2>High automation does not determine one social outcome</h2>
+          <p>Ownership, distribution, safety, democracy, and transition capacity decide whether abundance is shared—or power simply concentrates.</p>
+        </div>
+        <div class="chart-toolbar">
+          <button class="btn small outcome-preset" data-outcome-preset="shared">Shared abundance</button>
+          <button class="btn small outcome-preset" data-outcome-preset="concentrated">Concentrated power</button>
+          <button class="btn small outcome-preset" data-outcome-preset="fragile">Fragile transition</button>
+          <button class="btn small outcome-preset" data-outcome-preset="balanced">Balanced</button>
+        </div>
+      </div>
+      <div class="outcome-layout">
+        <div class="outcome-controls" id="outcome-controls"></div>
+        <div>
+          <p class="notice">Heuristic scenario weights, not probabilities of prosperity or catastrophe.</p><div id="outcome-bars" class="outcome-bars"></div>
+          <div id="outcome-narrative" class="outcome-narrative"></div>
+        </div>
+      </div>
+      <p class="privacy">The percentages here are normalized scenario weights generated by transparent heuristics—not measured probabilities or expert forecasts.</p>
+    </section>
+
+    <section id="prepare-section" class="panel panel-pad">
+ <div class="section-title"><div><div class="kicker">Your preparation · optional &amp; private</div><h2>Explore your work. Build useful options.</h2><p>Choose a role, confirm your tasks, then answer four short questions. Students and career changers can choose a target role.</p></div><button class="btn small" id="clear-profile">Clear my profile</button></div>
+ <div class="profile-fields">
+ <label class="field">1. Current or target role<select id="career-role"><option value="">Choose a role…</option></select></label>
+ <label class="field">Planning year<select id="planning-year"><option>2030</option><option selected>2035</option><option>2040</option></select></label>
+ </div>
+ <p id="role-intro" class="desc">No career or preparation answers are assumed.</p>
+ <div id="task-step" hidden>
+ <h3>2. Does this task mix describe your work?</h3>
+ <p class="privacy">These starting shares are illustrative author assumptions, not measured time use. Adjust relative amounts; they are normalized to 100%. A job title does not define your tasks.</p>
+ <div id="task-editor"></div>
+ <p id="task-total" class="status-line"></p>
+ <label class="checkline"><input type="checkbox" id="confirm-tasks"> I have reviewed this task mix</label>
+ <p id="personal-intro" class="notice" hidden></p>
+ <details><summary>Role sources and mapping assumptions</summary><div id="role-provenance"></div></details>
+ <h3>3. What can you draw on?</h3>
+ <div id="questionnaire" class="question-grid"></div>
+ <details><summary>Optional context and local note</summary><div id="optional-questions" class="question-grid"></div><label class="field">Unscored note, kept in this page session<textarea id="profile-note" maxlength="400" rows="3" placeholder="An optional reminder for yourself"></textarea></label><p class="privacy">Your note never changes the score. It is excluded from scenario exports unless you explicitly include your profile.</p><p id="note-preview"></p></details>
+ </div>
+ <div id="career-results" class="career-results" aria-live="polite"><p class="notice">Choose a role to explore exposure. Scores remain incomplete until you confirm tasks and answer the required questions.</p></div>
+ <label class="field" id="comparison-label">Compare with one alternative role<select id="alternative-role"><option value="">No comparison</option></select></label>
+ <div id="career-comparison"></div><p class="privacy">Both roles use the same scenario, planning year and preparation answers. Alternative roles use their labeled illustrative task mix. Retraining cost, job availability and individual suitability are not fully modeled. No role is permanently AI-proof.</p>
+ <details id="score-method"><summary>How this is calculated · career method 1.0.0</summary>
+ <p><b>Published evidence:</b> O*NET describes U.S. occupations. The ILO studies GenAI exposure. Neither supplies or validates this app's scores.</p>
+ <p><b>Author/model assumptions:</b> task shares, mappings, domain curves and all scoring weights. These are editable planning assumptions, not statistical estimates. Physical work, safety and regulation already act inside domain curves; no extra bonuses are added.</p>
+ <p><b>Visitor answers:</b> your confirmed tasks and anchored preparation choices. Missing answers are not zeros.</p>
+ <p>Task exposure = sum of normalized task shares × each mapped domain's deterministic curve at the selected year. Technical capability and actual substitution are calculated separately. It is not unemployment probability.</p>
+ <div id="weight-table"></div>
+ <p>Preparation = weighted average of answered components. All four required answers are needed for a score. Optional unanswered components are omitted and the remaining weights are renormalized. Resource constraints are not personal failings.</p>
+ <p>Resilience = 75% × preparation + 25% × (100 − modeled actual task substitution). Scores are rounded to whole points; they are not statistical confidence estimates or measures of human worth or hiring suitability.</p>
+ <p><b>Worked example:</b> with all required answers at 50 and optional answers omitted, preparation is 50. If modeled actual substitution is 60%, resilience is round(0.75 × 50 + 0.25 × 40) = 48. A fully prepared person can still have high exposure.</p>
+ <p>Source coverage and assumption sensitivity are shown separately from scores. Try different task mixes and scenarios; there is no invented confidence interval.</p>
+ </details>
+ <p class="privacy">Profile answers stay in page memory by default. No accounts, analytics, storage or AI API. The app does not transmit your answers; the hosting provider may receive ordinary request metadata. Opening a source link contacts that website. Clearing your profile cannot erase copies you previously exported.</p>
+</section>
+<section id="evidence-section" class="panel panel-pad"><div class="kicker">Evidence &amp; its limits</div><h2>Recent AI evidence — curated, not a live feed</h2><p id="evidence-status" class="notice"></p><p class="privacy">A small selection of verified historical research, not comprehensive current news. Cards do not change any model parameter or visitor setting. Announcements, demonstrations, independent tests and deployment evidence are different evidence types.</p><div id="evidence-cards" class="evidence-cards"></div></section>
+<section id="glossary-section" class="panel panel-pad"><div class="kicker">Control guide</div><h2>What each assumption means</h2><p class="privacy">0–100 describes a relative assumption setting. Pace controls shift milestone dates, not measured growth rates.</p><div id="glossary"></div></section>
+
+
+
+    <section id="methods-section" class="panel panel-pad">
+      <div class="section-title">
+        <div>
+          <div class="kicker">Method, assumptions & sources</div>
+          <h2>What the simulator actually does</h2>
+          <p>It is a transparent stress-test model, not a scientific forecast or a claim of inevitability.</p>
+        </div>
+      </div>
+      <div class="method-grid">
+        <div class="method-box">
+          <h4>Four layers per domain</h4>
+          <ul>
+            <li><b>Cognitive capability:</b> can AI reason, plan, perceive, and use tools?</li>
+            <li><b>Reliability:</b> can it recover from errors and sustain long tasks at acceptable failure rates?</li>
+            <li><b>Embodiment:</b> can hardware act safely in messy physical environments?</li>
+            <li><b>Adoption:</b> do cost, regulation, liability, integration, trust, and demand allow deployment?</li>
+          </ul>
+        </div>
+        <div class="method-box">
+          <h4>Uncertainty model</h4>
+          <p>Technology updates use 240 seeded Monte Carlo paths; cached results are reused. It varies global progress regimes, domain-specific capability dates, robotics, reliability, adoption, and ceiling estimates. The 10–90% bands are uncertainty inside this model only; they do not capture every unknown.</p>
+          <p>Dates after 2030 are especially sensitive to assumptions about scaling limits, AI-assisted R&D, hardware deployment, and institutional response.</p>
+        </div>
+        <div class="method-box">
+          <h4>Definitions</h4>
+          <ul>
+            <li><b>Technical substitutability:</b> share of current tasks machines could perform under favorable deployment.</li>
+            <li><b>Actual substitution:</b> technical capability multiplied by integration, regulation, trust, and human-preference constraints.</li>
+            <li><b>Net human labor demand:</b> unautomated current tasks plus modeled new human tasks.</li>
+            <li><b>Post-labor-like:</b> below 25% of 2026 human hours—not zero work and not zero purpose.</li>
+          </ul>
+        </div>
+        <div class="method-box">
+          <h4>Major omissions</h4>
+          <p>The simulator does not explicitly model wars, pandemics, climate shocks, national divergence, demographic change, model theft, radical new architectures, or a single catastrophic discontinuity. Those can dominate the result. It also uses illustrative global work-hour weights rather than an official employment forecast.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:22px">Domain assumptions</h3>
+      <div class="table-wrap">
+        <table class="assumption-table">
+          <thead><tr><th>Domain</th><th>Weight</th><th>Digital</th><th>Embodied</th><th>Regulation</th><th>Human-presence preference</th><th>Base cognitive midpoint</th><th>Base robot midpoint</th></tr></thead>
+          <tbody id="assumption-body"></tbody>
+        </table>
+      </div>
+
+      <h3 style="margin-top:22px">Published context, not numerical calibration</h3>
+      <div id="sources" class="sources"></div>
+    </section>
+  </main>
+</div>
+
+
+<div id="json-panel" class="json-panel" role="dialog" aria-modal="true" aria-labelledby="json-title">
+  <div class="json-card">
+    <h3 id="json-title">Scenario backup and import</h3>
+    <p>Copy this JSON, download it, or paste a previously exported scenario and press “Import pasted JSON”. This fallback works even when an in-app browser blocks downloads.</p>
+    <label class="checkline"><input id="export-profile" type="checkbox"> Include my career profile and answers (contains personal information)</label><textarea id="json-text" spellcheck="false" aria-label="Scenario JSON"></textarea>
+    <div class="json-actions">
+      <button class="btn small primary" id="copy-json-btn">Copy JSON</button>
+      <button class="btn small" id="download-json-btn">Download JSON</button>
+      <button class="btn small" id="import-json-btn">Import pasted JSON</button>
+      <button class="btn small" id="close-json-btn">Close</button>
+    </div>
+    <div id="json-status" class="status-line" aria-live="polite"></div>
+  </div>
+</div>
+
+<footer class="shell footer">
+  AI, Work &amp; Human Futures · Model 3.0.0 · Career method 1.0.0 · Evidence snapshot 11 October 2026. Automatic updates disabled. <a href="#methods-section">Method &amp; attribution</a>. Code: MIT; O*NET-derived descriptions: CC BY 4.0.
+</footer><noscript><p class="notice">Enable JavaScript to run the local simulator.</p></noscript>
+
+
+<script>'use strict';
+(function(root){
+  const START_YEAR = 2026;
+  const END_YEAR = 2100;
+  const NEVER = Infinity;
+  const SIMS = 240;
+
+  const domains = [
+    {id:'software', name:'Software & AI R&D', weight:5, digital:.99, physical:.01, cog:2029, rel:2.5, robot:2036, adopt:2.0, reg:.25, pref:.03, max:.99, unc:3, ai:1.0, safety:.55, context:.70, desc:'Highly digital and directly accelerated by better models, but real projects still require context, verification, ownership, and coordination.', signal:'The fastest domain in the model; the binding constraint shifts from raw reasoning to reliability and organizational integration.'},
+    {id:'office', name:'Office, admin & customer operations', weight:11, digital:.98, physical:.02, cog:2030, rel:3.0, robot:2038, adopt:3.0, reg:.35, pref:.05, max:.98, unc:4, ai:.8, safety:.50, context:.60, desc:'Structured information work is easy to copy and scale, but permissions, messy systems, exceptions, and accountability slow full replacement.', signal:'Likely to see rapid task compression and fewer entry-level roles before complete job elimination.'},
+    {id:'media', name:'Media, marketing & design', weight:4, digital:.97, physical:.03, cog:2028.5, rel:2.0, robot:2037, adopt:2.0, reg:.20, pref:.15, max:.96, unc:3, ai:.7, safety:.25, context:.40, desc:'Generation is already cheap; differentiation moves toward taste, brand, trust, distribution, rights, and human identity.', signal:'Technical capability arrives early, while human-authenticity demand preserves a residual market.'},
+    {id:'finance', name:'Finance, accounting & legal', weight:7, digital:.96, physical:.04, cog:2030.5, rel:4.5, robot:2039, adopt:4.5, reg:.85, pref:.12, max:.96, unc:5, ai:.8, safety:.95, context:.80, desc:'Digitized, high-value work is attractive to automate, but errors, auditability, fiduciary duties, and legal accountability matter.', signal:'Competence can arrive years before institutions accept autonomous sign-off.'},
+    {id:'science', name:'Science & engineering R&D', weight:6, digital:.78, physical:.22, cog:2032, rel:5.0, robot:2041, adopt:4.0, reg:.50, pref:.08, max:.95, unc:6, ai:1.0, safety:.85, context:.90, desc:'AI can search, model, code, and propose experiments, while laboratory execution, ambiguous goals, and validation remain bottlenecks.', signal:'A major feedback channel: progress here can accelerate progress everywhere else.'},
+    {id:'education', name:'Education & training', weight:7, digital:.70, physical:.30, cog:2031.5, rel:4.5, robot:2044, adopt:6.0, reg:.75, pref:.40, max:.94, unc:6, ai:.5, safety:.80, context:.90, desc:'Personalized tutoring can scale quickly, but child safety, motivation, social development, credentialing, and demand for human teachers matter.', signal:'Technical teaching capacity may precede broad substitution by a long margin.'},
+    {id:'medicine', name:'Medicine & health care', weight:8, digital:.55, physical:.45, cog:2033, rel:7.0, robot:2046, adopt:8.0, reg:1.0, pref:.35, max:.94, unc:8, ai:.7, safety:1.0, context:1.0, desc:'Diagnosis, documentation, and planning are digitizable; procedures, care, liability, trust, and regulation create a much longer deployment tail.', signal:'High capability does not equal clinical authorization or patient acceptance.'},
+    {id:'transport', name:'Transport & logistics', weight:8, digital:.30, physical:.70, cog:2031, rel:5.5, robot:2040, adopt:6.5, reg:.90, pref:.05, max:.97, unc:7, ai:.5, safety:1.0, context:.80, desc:'Routing and dispatch are digital, while autonomy must handle rare physical edge cases, infrastructure, weather, and safety regulation.', signal:'Constrained routes automate earlier than universal autonomy.'},
+    {id:'manufacturing', name:'Manufacturing', weight:11, digital:.28, physical:.72, cog:2031.5, rel:4.5, robot:2040, adopt:5.5, reg:.60, pref:.04, max:.98, unc:6, ai:.5, safety:.80, context:.70, desc:'Controlled environments favor robots, but retooling factories, long-lived capital, maintenance, and product variety slow diffusion.', signal:'One of the earliest physical domains, especially in greenfield factories.'},
+    {id:'energy', name:'Energy, utilities & extraction', weight:6, digital:.38, physical:.62, cog:2032, rel:5.5, robot:2043, adopt:6.0, reg:.95, pref:.04, max:.97, unc:7, ai:.6, safety:1.0, context:.80, desc:'Optimization is digital, but field maintenance, safety-critical infrastructure, remote sites, and regulation retain humans longer.', signal:'Automation can raise output while preserving human oversight for tail risk.'},
+    {id:'agriculture', name:'Agriculture & food production', weight:5, digital:.22, physical:.78, cog:2033.5, rel:5.0, robot:2045, adopt:7.0, reg:.55, pref:.05, max:.95, unc:8, ai:.4, safety:.75, context:.70, desc:'Farms are physically variable, weather-exposed, and capital constrained; large standardized operations automate before small heterogeneous ones.', signal:'Hardware economics and fleet maintenance matter as much as intelligence.'},
+    {id:'construction', name:'Construction & maintenance', weight:8, digital:.18, physical:.82, cog:2034.5, rel:6.0, robot:2049, adopt:8.0, reg:.70, pref:.06, max:.93, unc:9, ai:.4, safety:.85, context:.90, desc:'Every site is different, materials deform, spaces are unstructured, and errors can be dangerous—making this a late physical frontier.', signal:'Design automates much earlier than general on-site execution.'},
+    {id:'care', name:'Care, hospitality & domestic work', weight:8, digital:.30, physical:.70, cog:2033.5, rel:5.5, robot:2050, adopt:8.0, reg:.75, pref:.50, max:.92, unc:10, ai:.3, safety:.85, context:1.0, desc:'Physical assistance can be automated, but empathy, intimacy, trust, dignity, and preference for human contact create a strong social moat.', signal:'This domain is often the reason “all-domain actual takeover” is not reached by 2100 in human-centered scenarios.'},
+    {id:'management', name:'Management, negotiation & governance', weight:4, digital:.92, physical:.08, cog:2032.5, rel:6.5, robot:2041, adopt:7.0, reg:.90, pref:.50, max:.90, unc:8, ai:.8, safety:.95, context:1.0, desc:'Analysis and coordination can be automated, while legitimacy, persuasion, responsibility, coalition-building, and human authority may remain demanded.', signal:'A technically capable system may advise leaders long before societies accept machine rule.'},
+    {id:'public', name:'Public safety & defence', weight:2, digital:.55, physical:.45, cog:2031.5, rel:6.5, robot:2044, adopt:7.0, reg:1.0, pref:.30, max:.94, unc:8, ai:.7, safety:1.0, context:.90, desc:'Strong incentives push automation, but escalation risk, law, accountability, and the need for human command constrain legitimate deployment.', signal:'Capability may advance faster than acceptable delegation of lethal or coercive authority.'}
+  ];
+
+  const presets = {
+    central:{capability:55,reliability:50,feedback:35,compute:55,robotics:45,supply:50,adoption:50,regulation:50,humanPref:55,newTasks:50},
+    bottlenecked:{capability:25,reliability:30,feedback:15,compute:35,robotics:25,supply:70,adoption:35,regulation:65,humanPref:65,newTasks:65},
+    rapid:{capability:90,reliability:85,feedback:90,compute:85,robotics:70,supply:25,adoption:80,regulation:25,humanPref:30,newTasks:25},
+    robotics:{capability:65,reliability:65,feedback:50,compute:70,robotics:95,supply:20,adoption:75,regulation:35,humanPref:40,newTasks:40},
+    human:{capability:70,reliability:65,feedback:55,compute:70,robotics:60,supply:45,adoption:55,regulation:75,humanPref:90,newTasks:85},
+    replacement:{capability:95,reliability:92,feedback:95,compute:90,robotics:92,supply:15,adoption:92,regulation:8,humanPref:0,newTasks:0}
+  };
+
+  const outcomePresets = {
+    balanced:{safety:55,ownership:45,redistribution:50,democracy:60,transition:50,meaning:55,surveillance:40,coordination:45},
+    shared:{safety:82,ownership:85,redistribution:88,democracy:82,transition:85,meaning:82,surveillance:18,coordination:80},
+    concentrated:{safety:58,ownership:15,redistribution:18,democracy:32,transition:28,meaning:35,surveillance:78,coordination:35},
+    fragile:{safety:30,ownership:28,redistribution:25,democracy:45,transition:20,meaning:38,surveillance:52,coordination:18}
+  };
+
+  const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
+  const norm = v => (v - 50) / 50;
+  const logistic = x => 1 / (1 + Math.exp(-x));
+  const yearRange = Array.from({length:END_YEAR-START_YEAR+1}, (_,i)=>START_YEAR+i);
+
+  function mulberry32(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function normal(rng, mean=0, sd=1) {
+    let u=0,v=0;
+    while(u===0) u=rng();
+    while(v===0) v=rng();
+    return mean + sd * Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  }
+  function quantile(arr, q) {
+    if (!arr.length) return NaN;
+    const a = [...arr].sort((x,y)=>x-y);
+    const pos = (a.length-1)*q;
+    const lo = Math.floor(pos), hi = Math.ceil(pos);
+    if (lo===hi) return a[lo];
+    return a[lo] + (a[hi]-a[lo])*(pos-lo);
+  }
+  function firstYear(values, test) {
+    for (let i=0;i<values.length;i++) if (test(values[i])) return START_YEAR+i;
+    return NEVER;
+  }
+  function formatYear(y) {
+    if (!Number.isFinite(y) || y > END_YEAR) return 'Not by 2100';
+    return String(Math.round(y));
+  }
+  function formatRange(q10,q90) {
+    const a = formatYear(q10), b = formatYear(q90);
+    if (a==='Not by 2100' && b==='Not by 2100') return 'Not reached by 2100 in this modeled range';
+    if (b==='Not by 2100') return `10th percentile ${a}; upper tail not by 2100`;
+    return `Model 10–90% range: ${a}–${b}`;
+  }
+  function describeValue(v, meta) {
+    if (v < 20) return meta.low;
+    if (v < 40) return `fairly ${meta.low}`;
+    if (v < 60) return 'moderate';
+    if (v < 80) return `fairly ${meta.high}`;
+    return meta.high;
+  }
+
+  function computeParams(d, c, pert={}) {
+    const feedbackNorm = (c.feedback - 35) / 65;
+    let cogMid = d.cog - 8*norm(c.capability) - 3*norm(c.compute) - 4*feedbackNorm*d.ai + 3*norm(c.supply);
+    cogMid += (pert.globalCog||0) + (pert[`${d.id}_cog`]||0);
+    let relMid = cogMid + d.rel - 7*norm(c.reliability)*(0.5+0.5*d.safety) + 1.5*norm(c.supply);
+    relMid += (pert.globalRel||0) + (pert[`${d.id}_rel`]||0);
+    let robotMid = d.robot - 12*norm(c.robotics) - 3*norm(c.compute) + 6*norm(c.supply);
+    robotMid += (pert.globalRobot||0) + (pert[`${d.id}_robot`]||0);
+    let adoptMid = relMid + d.adopt - 8*norm(c.adoption) + 7*norm(c.regulation)*d.reg + 3*norm(c.supply)*d.physical;
+    adoptMid += (pert.globalAdopt||0) + (pert[`${d.id}_adopt`]||0);
+    const maxAuto = clamp(d.max + (pert[`${d.id}_max`]||0), .70, .995);
+    const cap = maxAuto * (1 - 0.55*d.pref*(c.humanPref/100));
+    return {
+      cogMid, relMid, robotMid, adoptMid, maxAuto, cap,
+      cogWidth:3.0+0.6*d.context,
+      relWidth:3.6+1.7*d.safety,
+      robotWidth:4.3+1.8*d.context,
+      adoptWidth:4.0+1.8*d.reg
+    };
+  }
+
+  function domainValues(d, year, p, mode='actual') {
+    const cog = logistic((year-p.cogMid)/p.cogWidth);
+    const rel = logistic((year-p.relMid)/p.relWidth);
+    const robot = logistic((year-p.robotMid)/p.robotWidth);
+    const embodiment = d.digital + d.physical*robot;
+    const technical = p.maxAuto*cog*rel*embodiment;
+    if (mode==='technical') return technical;
+    const adoption = logistic((year-p.adoptMid)/p.adoptWidth);
+    return Math.min(p.cap, technical*adoption);
+  }
+
+  function makePerturbations(rng) {
+    const p = {};
+    const u = rng();
+    const regime = u < .10 ? -4 : (u < .25 ? 5 : normal(rng,0,2.5));
+    p.globalCog = regime + normal(rng,0,1.5);
+    p.globalRel = .6*regime + normal(rng,0,1.5);
+    p.globalRobot = .7*regime + normal(rng,0,3.5);
+    p.globalAdopt = .5*regime + normal(rng,0,2.5);
+    domains.forEach(d => {
+      p[`${d.id}_cog`] = normal(rng,0,d.unc*.30);
+      p[`${d.id}_rel`] = normal(rng,0,d.unc*.18);
+      p[`${d.id}_robot`] = normal(rng,0,d.unc*.42);
+      p[`${d.id}_adopt`] = normal(rng,0,d.unc*.22);
+      p[`${d.id}_max`] = normal(rng,0,.018);
+    });
+    return p;
+  }
+
+  function* simulateSteps(state, {timelineMetric='actual',timelineThreshold=.8,seed=418762}={}) {
+    const curves = {
+      actual:yearRange.map(()=>[]),
+      technical:yearRange.map(()=>[]),
+      human:yearRange.map(()=>[])
+    };
+    const milestones = {majority:[], weighted80:[], weighted90:[], post25:[], post10:[], allTech80:[], allActual80:[]};
+    const domainThresholds = Object.fromEntries(domains.map(d=>[d.id,[]]));
+    const rng = mulberry32(seed);
+
+    for (let s=0;s<SIMS;s++) {
+      const pert = makePerturbations(rng);
+      const params = domains.map(d=>computeParams(d,state,pert));
+      const actualCurve=[], technicalCurve=[], humanCurve=[];
+      const domainReached = Object.fromEntries(domains.map(d=>[d.id,NEVER]));
+      let allTech80=NEVER, allActual80=NEVER;
+      const newTaskFloor = (state.newTasks/100)*.30;
+
+      for (let yi=0;yi<yearRange.length;yi++) {
+        const year = yearRange[yi];
+        let actual=0, technical=0;
+        let everyTech80=true, everyActual80=true;
+        domains.forEach((d,di)=>{
+          const tv = domainValues(d,year,params[di],'technical');
+          const av = domainValues(d,year,params[di],'actual');
+          technical += d.weight*tv/100;
+          actual += d.weight*av/100;
+          if (tv < .8) everyTech80=false;
+          if (av < .8) everyActual80=false;
+          const check = timelineMetric==='technical' ? tv : av;
+          if (domainReached[d.id]===NEVER && check>=timelineThreshold) domainReached[d.id]=year;
+        });
+        const human = (1-actual)+actual*newTaskFloor;
+        actualCurve.push(actual); technicalCurve.push(technical); humanCurve.push(human);
+        curves.actual[yi].push(actual); curves.technical[yi].push(technical); curves.human[yi].push(human);
+        if (allTech80===NEVER && everyTech80) allTech80=year;
+        if (allActual80===NEVER && everyActual80) allActual80=year;
+      }
+      milestones.majority.push(firstYear(actualCurve,v=>v>=.5));
+      milestones.weighted80.push(firstYear(actualCurve,v=>v>=.8));
+      milestones.weighted90.push(firstYear(actualCurve,v=>v>=.9));
+      milestones.post25.push(firstYear(humanCurve,v=>v<=.25));
+      milestones.post10.push(firstYear(humanCurve,v=>v<=.10));
+      milestones.allTech80.push(allTech80);
+      milestones.allActual80.push(allActual80);
+      domains.forEach(d=>domainThresholds[d.id].push(domainReached[d.id]));
+      if (s % 8 === 7) yield {completed:s+1};
+    }
+
+    const curveQ = {};
+    ['actual','technical','human'].forEach(k=>{
+      curveQ[k]={q10:[],q50:[],q90:[]};
+      curves[k].forEach(vals=>{
+        curveQ[k].q10.push(quantile(vals,.10));
+        curveQ[k].q50.push(quantile(vals,.50));
+        curveQ[k].q90.push(quantile(vals,.90));
+      });
+    });
+    const milestoneQ = {};
+    Object.entries(milestones).forEach(([k,v])=>milestoneQ[k]={q10:dateQuantile(v,.10),q50:dateQuantile(v,.50),q90:dateQuantile(v,.90),neverShare:v.filter(x=>x>END_YEAR).length/v.length});
+    const domainQ = {};
+    Object.entries(domainThresholds).forEach(([k,v])=>domainQ[k]={q10:dateQuantile(v,.10),q50:dateQuantile(v,.50),q90:dateQuantile(v,.90),neverShare:v.filter(x=>x>END_YEAR).length/v.length});
+    return {curveQ,milestoneQ,domainQ,timelineMetric,timelineThreshold};
+  }
+
+  function deterministicCurves(c=presets.central) {
+    const params = domains.map(d=>computeParams(d,c,{}));
+    const actual=[], technical=[], human=[];
+    const floor=(c.newTasks/100)*.30;
+    yearRange.forEach(y=>{
+      let a=0,t=0;
+      domains.forEach((d,i)=>{
+        t += d.weight*domainValues(d,y,params[i],'technical')/100;
+        a += d.weight*domainValues(d,y,params[i],'actual')/100;
+      });
+      technical.push(t); actual.push(a); human.push((1-a)+a*floor);
+    });
+    return {actual,technical,human,params};
+  }
+
+  function deterministicMilestone(c=presets.central, key='post25') {
+    const curves=deterministicCurves(c);
+    if (key==='post25') return firstYear(curves.human,v=>v<=.25);
+    if (key==='majority') return firstYear(curves.actual,v=>v>=.5);
+    if (key==='weighted80') return firstYear(curves.actual,v=>v>=.8);
+    return NEVER;
+  }
+
+
+  function dateQuantile(values,q) {
+    const a=[...values].sort((x,y)=>x-y);
+    return a[Math.max(0,Math.ceil(q*a.length)-1)];
+  }
+  function simulate(state,options) {
+    const iterator=simulateSteps(state,options); let step;
+    do {step=iterator.next();} while(!step.done);
+    return step.value;
+  }
+
+const api={START_YEAR,END_YEAR,NEVER,SIMS,domains,presets,outcomePresets,clamp,norm,yearRange,computeParams,domainValues,deterministicCurves,deterministicMilestone,firstYear,formatYear,formatRange,describeValue,simulateSteps,simulate,dateQuantile};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.FuturesModel=api;
+})(globalThis);
+
+'use strict';
+(function(root){
+const MODEL_VERSION='3.0.0', CAREER_VERSION='1.0.0', EVIDENCE_VERSION='2026-10-11', SEED=418762;
+const controls={
+ capability:["How quickly AI's thinking skills improve","Cognitive capability pace","Slower progress","Faster progress","Reasoning, coding, planning and understanding.","An assistant solving a complex coding task.","Moves cognitive and downstream reliability/deployment dates earlier.","Shifts dates; it is not an estimated doubling rate."],
+ reliability:["How soon AI can work reliably without supervision","Reliability & autonomy","Needs frequent help","Reliable on longer tasks","Finishing multi-step work, checking results and recovering from mistakes.","An assistant completing a workflow and fixing its own mistakes.","Moves reliability and downstream deployment dates earlier.","Does not measure a real system's error rate."],
+ feedback:["How much AI speeds up AI research","AI-R&D feedback","Little acceleration","Strong acceleration","AI helping researchers develop better AI.","AI suggesting experiments for the next model.","Advances capability milestones in proportion to each domain's AI research sensitivity.","A date shift, not a simulated recursive research loop."],
+ compute:["Growth of AI computing, power and data resources","Compute & energy buildout","Slower expansion","Faster expansion","Useful chips, electricity, data centres, data and efficiency.","More electricity and efficient chips available for training.","Advances cognitive and robot milestones, with downstream deployment effects.","No explicit power-grid, data or investment budget is simulated."],
+ robotics:["How quickly robots improve at physical work","Robotics pace","Slower progress","Faster progress","Handling objects, moving and working outside a computer.","A robot handling varied objects in a workshop.","Advances the physical contribution to technical capability and substitution.","Effects are smaller in mostly digital domains."],
+ supply:["Shortages limiting AI and robot deployment","Supply constraints","Few shortages","Severe shortages","Limits in chips, electricity, materials, factories and investment.","A shortage delaying installation of factory robots.","Higher values delay cognitive, reliability, robotics and deployment dates.","A broad friction assumption, not a measured shortage index."],
+ adoption:["How quickly workplaces put AI into use","Deployment speed","Slow rollout","Fast rollout","Integrating AI into tools, training and everyday workflows.","An employer integrating an assistant with its internal systems.","Higher values advance actual substitution; technical capability is unchanged.","No employer-specific costs or incentives are estimated."],
+ regulation:["Deployment barriers: rules, liability and trust","Regulation & trust friction","Lower barriers","Higher barriers","Requirements and acceptance barriers before deployment.","A clinical tool awaiting authorization and accepted responsibility.","Higher values delay deployment, especially in regulated domains; technical capability is unchanged.","Friction is not a judgment on regulation; governance and safety are separate."],
+ humanPref:["How strongly people want humans involved","Human-presence demand","Less human involvement demanded","More human involvement demanded","Continued demand for human care, teaching, authority or accountability.","A family wanting a human caregiver even when a machine is capable.","Higher values can lower the ceiling on actual substitution; technical capability is unchanged.","A ceiling may not bind at early dates."],
+ newTasks:["How much new work for people appears","New human task creation","Little new human work","More new human work","New activities as older tasks become automated.","New services built around human experiences.","Higher values increase remaining human work; capability and current-task substitution are unchanged.","New work is a simple floor, not a model of new occupations."],
+};
+const controlMeta=Object.fromEntries(Object.entries(controls).map(([k,a])=>[k,{label:a[0],term:a[1],low:a[2],high:a[3],meaning:a[4],example:a[5],effect:a[6],limit:a[7]}]));
+const socials={
+ safety:["Control and safety of advanced AI","Alignment & control quality","Weaker control and safety","Stronger control and safety","Robust monitoring, correction and security.","Independent system evaluations."],
+ ownership:["Who owns productive AI","Broad ownership","Concentrated ownership","Broad ownership","How widely households, workers or public institutions share ownership.","Worker or public ownership funds."],
+ redistribution:["Sharing through services or dividends","Social dividend & redistribution","Less sharing","More sharing","How gains are shared through services, benefits and dividends.","Better access to essential public services."],
+ democracy:["Public accountability","Democratic accountability","Weaker accountability","Stronger accountability","Rights, transparency, courts and public voice.","An accessible process to challenge an automated decision."],
+ transition:["Support during changes in work","Worker transition capacity","Little transition support","Extensive transition support","Learning, insurance and practical help through job transitions.","Paid training time."],
+ meaning:["Community and purposeful activity","Institutions for meaning & community","Fewer community institutions","More community institutions","Opportunities for care, art, education and civic participation.","A well-supported community centre."],
+ surveillance:["Surveillance and coercion","Surveillance & coercive concentration","Less surveillance and coercion","More surveillance and coercion","The concentration of monitoring and coercive power.","Pervasive monitoring without meaningful accountability."],
+ coordination:["International coordination","International safety coordination","Weak coordination","Strong coordination","Shared standards, reporting and evaluations across borders.","Cross-border incident reporting."]
+};
+const outcomeMeta=Object.fromEntries(Object.entries(socials).map(([k,a])=>[k,{label:a[0],term:a[1],low:a[2],high:a[3],meaning:a[4],example:a[5],effect:k==='surveillance'?'Higher values favor authoritarian scenario weights.':'Higher values change the illustrative social weights according to the heuristic equations.',limit:'These are heuristic weights, not measured probabilities; technology curves do not change.'}]));
+const scenarioInfo={
+ central:{name:'Central continuation',subtitle:'Reference scenario',description:'Moderate progress and deployment with continuing bottlenecks. This is a reference point, not an established most-likely forecast.'},
+ bottlenecked:{name:'Bottlenecked progress',subtitle:'Progress faces persistent obstacles',description:'Slower capability and robotics gains, more resource and deployment friction, and more remaining human work.'},
+ rapid:{name:'Rapid recursive progress',subtitle:'AI strongly accelerates AI research',description:'Fast capability and reliability gains, strong assumed research feedback and relatively fast adoption. Recursive means AI helping improve the next generation. This engine shifts milestones; it does not simulate a recursive research process.'},
+ robotics:{name:'Robotics breakthrough',subtitle:'Physical automation catches up faster',description:'Particularly rapid robotics progress, with supportive resource and deployment assumptions.'},
+ human:{name:'Human-centered adoption',subtitle:'Strong AI, continued human involvement',description:'Capable AI with stronger demand for human presence, more deployment safeguards and friction, and new human work. This is not simply slow AI.'},
+ replacement:{name:'Pure replacement race',subtitle:'Extreme replacement stress test',description:'Very rapid progress and adoption, little friction and very low assumed demand for human involvement or new human work. An extreme hypothetical, not an endorsement or prediction.'}
+};
+const socialInfo={
+ balanced:{name:'Balanced',subtitle:'Mixed institutional assumptions',description:'Moderate safety, sharing and transition support; accountability is somewhat stronger, while ownership and international coordination remain limited.'},
+ shared:{name:'Shared abundance',subtitle:'Broad ownership and support',description:'High safety, broad ownership, extensive sharing, accountability, transition support and coordination, with low surveillance.'},
+ concentrated:{name:'Concentrated power',subtitle:'Gains and control concentrate',description:'Low broad ownership and sharing, weak accountability and transition support, and high surveillance, despite moderate safety.'},
+ fragile:{name:'Fragile transition',subtitle:'Limited support and coordination',description:'Weak safety, transition support and international coordination, limited sharing and ownership, and greater surveillance than Balanced.'}
+};
+function role(id,name,code,intro,tasks){
+ return {id,name,intro, tasks:tasks.map(([label,domain,weight])=>({label,domain,weight})),
+ provenance:{category:'author/model assumptions',sourceId:code,sourceURL:'https://www.onetonline.org/link/summary/'+code,sourceTitle:'O*NET OnLine occupation summary',version:'Live occupation summary; database catalog 31.0',publicationDate:null,publicationNote:'Page-specific publication date is not asserted.',accessDate:'2026-10-11',scope:'United States occupational descriptions; no country adjustment',mapping:'Task groups and relative shares are author assumptions, not O*NET time shares or ILO exposure scores.',license:'O*NET-derived descriptions: CC BY 4.0; adapted, without endorsement.'}};
+}
+const roles=[
+ role('software','Software development','15-1252.00','Software development combines implementation, testing and understanding user needs. Responsibilities differ across products and teams.',[['Coding and testing','software',65],['Requirements and coordination','management',20],['Documentation and support','office',15]]),
+ role('engineering','Engineering','17-2141.00','This engineering archetype focuses on mechanical design and validation. Field work, research and coordination vary widely by specialty.',[['Design and validation','science',60],['Physical integration','manufacturing',25],['Project coordination','management',15]]),
+ role('maintenance','Technical maintenance','49-9041.00','Technical maintenance involves diagnosing and restoring industrial equipment. The balance between hands-on repair and digital diagnosis depends on the workplace.',[['Troubleshooting and repair','construction',65],['Equipment inspection','manufacturing',20],['Service documentation','office',15]]),
+ role('trades','Skilled trades: electrical work','47-2111.00','Electrical work combines installation, diagnosis and checking physical systems. This example does not represent every skilled trade.',[['Installation and repair','construction',65],['System inspection','energy',25],['Job planning and records','office',10]]),
+ role('construction','Construction','47-2061.00','Construction work includes preparing sites and moving or installing materials. Work changes with the site, tools and stage of a project.',[['Site and material work','construction',75],['Equipment and movement','transport',15],['Plans and records','office',10]]),
+ role('manufacturing','Manufacturing and assembly','51-2092.00','Assembly work combines building products and checking quality. Automation exposure depends on the product mix and production environment.',[['Assembly and quality checks','manufacturing',75],['Equipment care','construction',15],['Production records','office',10]]),
+ role('nursing','Nursing and care','29-1141.00','Nursing combines patient assessment, hands-on care and coordination. Scope varies with qualifications and the care setting.',[['Clinical assessment and treatment','medicine',40],['Personal care and communication','care',40],['Records and scheduling','office',20]]),
+ role('medicine','Clinical medicine','29-1216.00','This clinical archetype draws on internal medicine work. Diagnosis, treatment and patient communication remain distinct parts of the role.',[['Diagnosis and treatment','medicine',65],['Patient communication','care',20],['Clinical administration','office',15]]),
+ role('teaching','Teaching','25-2031.00','Teaching includes lesson preparation, instruction and responding to learners. This example draws on secondary education and varies by learning environment.',[['Teaching and learner support','education',65],['Materials and assessment design','media',20],['Records and scheduling','office',15]]),
+ role('accounting','Accounting and finance','13-2011.00','This archetype centers on accounting, reporting and audit work. Financial roles outside accounting may require a different task mix.',[['Accounts and audit','finance',65],['Data and reporting','office',25],['Client coordination','management',10]]),
+ role('legal','Legal work','23-1011.00','Legal work combines analysis, drafting and advising or representing clients. Practice area and responsibility strongly influence the task mix.',[['Legal analysis and drafting','finance',60],['Negotiation and representation','management',30],['Case administration','office',10]]),
+ role('administration','Administration and customer support','43-4051.00','This archetype focuses on handling requests, records and service problems. Contact channels and authority to resolve problems differ across employers.',[['Requests and records','office',70],['Customer interaction','care',15],['Escalation and coordination','management',15]]),
+ role('design','Design and marketing','27-1024.00','This archetype centers on graphic design and communication materials. Marketing strategy or research may need a different task mix.',[['Visual concepts and production','media',65],['Briefs and client decisions','management',20],['Project administration','office',15]]),
+ role('transport','Transport and logistics','53-3032.00','This transport archetype draws on freight driving and delivery work. Warehouse, dispatch and planning roles can have substantially different task mixes.',[['Driving and handling freight','transport',75],['Vehicle checks','construction',15],['Dispatch and records','office',10]]),
+ role('retail','Retail','41-2031.00','Retail work combines helping customers, handling sales and managing goods. Shop format and product complexity influence the balance.',[['Customer service and sales','care',45],['Stock movement','transport',30],['Transactions and records','office',25]]),
+ role('hospitality','Hospitality','35-3031.00','This hospitality example draws on table service and guest support. Kitchens, hotels and event operations may require different task shares.',[['Guest service','care',65],['Orders and payment','office',20],['Moving and preparing supplies','transport',15]]),
+ role('management','Management and project work','13-1082.00','Project work combines coordinating people, plans and delivery. The mix depends on authority, project scope and the team needs.',[['Decisions and coordination','management',60],['Plans and reporting','office',25],['Technical evaluation','science',15]])
+];
+roles.push({id:'custom',name:'Custom role',intro:'Describe your work through an editable mix of the existing model domains. The suggested equal shares are placeholders until you confirm them.',tasks:[{label:'Task group 1',domain:'office',weight:1},{label:'Task group 2',domain:'construction',weight:1},{label:'Task group 3',domain:'care',weight:1}],provenance:{category:'visitor answers',sourceId:null,sourceURL:null,version:'Visitor-defined mapping 1.0',publicationDate:null,accessDate:null,scope:'Your chosen task mix',mapping:'No occupation-source coverage; your choices are mapped to author-assumed domain curves.'}});
+const questions={
+ use:{label:'How do you use AI in suitable work tasks?',weight:.20,required:true,options:[[0,'Not yet / not permitted'],[25,'Occasional experiments'],[50,'Regular use on low-risk tasks'],[75,'Repeatable workflows with review'],[100,'Measured workflows that I can teach others']]},
+ verify:{label:'How do you verify AI outputs?',weight:.25,required:true,options:[[0,'No checking routine yet'],[25,'I check when something looks wrong'],[50,'I compare with trusted references'],[75,'I test results and track errors'],[100,'I use documented checks and escalation rules']]},
+ skills:{label:'Can you demonstrate skills useful in another role?',weight:.20,required:true,options:[[0,'Not identified yet'],[25,'I can name a few'],[50,'I have examples from work or study'],[75,'I have practiced them in another setting'],[100,'I have documented, independently reviewed examples']]},
+ learning:{label:'What learning time is realistically available?',weight:.20,required:true,options:[[0,'No regular time available'],[25,'About 30 minutes each week'],[50,'About 1 hour each week'],[75,'About 2–3 hours each week'],[100,'About 4 or more hours each week']]},
+ buffer:{label:'Optional: financial buffer in months of essential expenses',weight:.10,required:false,options:[[0,'No buffer'],[25,'Less than 1 month'],[50,'1 to under 3 months'],[75,'3 to under 6 months'],[100,'6 or more months']]},
+ support:{label:'Optional: access to practical or professional support',weight:.05,required:false,options:[[0,'No support identified'],[25,'I know where to look'],[50,'One person or service I can contact'],[75,'Several reliable contacts'],[100,'An active, reciprocal support network']]}
+};
+const evidence=[
+ {id:'ilo-europe',title:'ILO explains why exposure differs from job replacement',publisher:'International Labour Organization',url:'https://www.ilo.org/resource/article/generative-ai-work-what-it-means-jobs-europe-and-beyond',published:'2025-09-29',eventDate:null,eventNote:'Research commentary; no separate event date.',reviewed:'2026-10-11',kind:'Research explanation',summary:'The ILO distinguishes task exposure from whole-job automation and describes the role of workplace adoption and learning opportunities.',tags:['adoption','office','transition'],limitation:'An explanation of research, not new deployment evidence or a forecast for a particular visitor.',impact:'No change'},
+ {id:'metr-rct',title:'A controlled study of AI-assisted software development',publisher:'METR',url:'https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/',published:'2025-07-10',eventDate:null,eventNote:'Study of early-2025 tools; a single event date is not specified.',reviewed:'2026-10-11',kind:'Independent controlled test',summary:'In this study, 16 experienced open-source developers took longer on familiar repository tasks when AI use was allowed. The result illustrates why benchmarks and workplace productivity differ.',tags:['software','reliability','adoption'],limitation:'Small, specific setting using early-2025 tools. The source links to a later follow-up; this card is historical evidence, not a claim about current performance.',impact:'No change'},
+ {id:'ilo-index',title:'A refined task-based index of occupational GenAI exposure',publisher:'International Labour Organization',url:'https://www.ilo.org/publications/generative-ai-and-jobs-refined-global-index-occupational-exposure',published:'2025-05-20',eventDate:null,eventNote:'Research publication; no separate event date.',reviewed:'2026-10-11',kind:'Published exposure research',summary:'The index combines task information, worker and expert input, and model predictions to study occupational exposure. Exposure is not an unemployment probability.',tags:['office','career exposure'],limitation:'GenAI exposure research is not a robotics forecast. Its exposure scores are not imported into this simulator.',impact:'No change'}
+];
+const api={MODEL_VERSION,CAREER_VERSION,EVIDENCE_VERSION,SEED,controlMeta,outcomeMeta,scenarioInfo,socialInfo,roles,questions,evidence};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.FuturesData=api;
+})(globalThis);
+
+'use strict';
+(function(root){
+const M=typeof module!=='undefined'&&module.exports?require('./model.js'):root.FuturesModel;
+const D=typeof module!=='undefined'&&module.exports?require('./data.js'):root.FuturesData;
+const RESILIENCE_WEIGHTS={preparedness:.75,remainingTasks:.25};
+function normalizeTasks(tasks){
+ const sum=tasks.reduce((s,t)=>s+t.weight,0);
+ if(!(sum>0)||tasks.some(t=>!Number.isFinite(t.weight)||t.weight<0||t.weight>100||!M.domains.some(d=>d.id===t.domain)))return null;
+ return tasks.map(t=>({...t,share:t.weight/sum}));
+}
+function exposure(tasks,scenario,year){
+ const normalized=normalizeTasks(tasks);if(!normalized)return null;
+ return normalized.reduce((r,t)=>{const d=M.domains.find(d=>d.id===t.domain),p=M.computeParams(d,scenario);
+ r.technical+=t.share*M.domainValues(d,year,p,'technical');
+ r.actual+=t.share*M.domainValues(d,year,p,'actual');return r;},{technical:0,actual:0});
+}
+function preparedness(answers){
+ const missing=Object.entries(D.questions).filter(([k,q])=>q.required&&answers[k]==null).map(([k])=>k);
+ const answered=Object.entries(D.questions).filter(([k])=>answers[k]!=null);
+ const denominator=answered.reduce((s,[,q])=>s+q.weight,0);
+ const components=answered.map(([key,q])=>({key,label:q.label,value:answers[key],weight:q.weight/denominator,contribution:answers[key]*q.weight/denominator}));
+ return {score:missing.length||!denominator?null:components.reduce((s,c)=>s+c.contribution,0),missing,denominator,components,omitted:Object.keys(D.questions).filter(k=>answers[k]==null)};
+}
+function resilience(prep,exp,confirmed){
+ if(prep.score==null||!exp||!confirmed)return null;
+ return Math.round(RESILIENCE_WEIGHTS.preparedness*prep.score+RESILIENCE_WEIGHTS.remainingTasks*100*(1-exp.actual));
+}
+function actions(role,tasks,answers,exp){
+ const focus=[...tasks].sort((a,b)=>b.weight-a.weight)[0]?.label.toLowerCase()||'your work';
+ const candidates=[
+ {key:'verify',title:'Build a checking routine',text:'For '+focus+', write a short checklist of trusted references, tests and when a human should take over.'},
+ {key:'use',title:'Try one bounded AI workflow',text:'Choose a low-risk part of '+focus+'. Compare time and quality with your usual process; follow workplace rules.'},
+ {key:'skills',title:'Make transferable skills visible',text:'Create one small example showing how your '+role.name.toLowerCase()+' skills solve a problem in another setting.'},
+ {key:'learning',title:'Make learning time practical',text:'Pick one skill connected to '+focus+' and a realistic practice slot. If time is limited, ask about paid learning or shared resources.'},
+ {key:'support',title:'Find one useful source of support',text:'Identify a peer, professional group or practical service that can help with changes in '+role.name.toLowerCase()+'.'},
+ {key:'buffer',title:'Map transition constraints',text:'Privately review essential expenses and available benefits or support. Use this to choose feasible learning steps; no investment choice is implied.'},
+ {key:'role',title:'Review how the task mix could change',text:'Discuss '+focus+' with someone doing the work. Identify what can be assisted, what needs review and which human responsibilities remain.'}
+ ];
+ return candidates.map(c=>({...c,priority:c.key==='role'?(.1+(exp?.actual||0)*.3):(100-(answers[c.key]??50))/100*D.questions[c.key].weight,reason:c.key==='role'?'Based on modeled task substitution':answers[c.key]==null?'Unanswered: explore this, no deficit inferred':'Based on your selected answer'})).sort((a,b)=>b.priority-a.priority).slice(0,3);
+}
+function strictObject(v,keys,name){
+ if(!v||typeof v!=='object'||Array.isArray(v))throw new Error(name+' must be an object.');
+ for(const k of Object.keys(v))if(!keys.includes(k))throw new Error('Unknown key in '+name+': '+k);
+}
+function numberMap(v,keys,name){
+ strictObject(v,keys,name);
+ for(const k of keys)if(typeof v[k]!=='number'||!Number.isFinite(v[k])||v[k]<0||v[k]>100)throw new Error(name+'.'+k+' must be a number from 0 to 100.');
+ return Object.fromEntries(keys.map(k=>[k,v[k]]));
+}
+function profilePayload(p){
+ strictObject(p,['roleId','alternativeId','tasks','confirmed','answers','note'],'profile');
+ if(!D.roles.some(r=>r.id===p.roleId)&&p.roleId!=='')throw new Error('Unknown role.');
+ if(!D.roles.some(r=>r.id===p.alternativeId&&r.id!=='custom')&&p.alternativeId!=='')throw new Error('Unknown alternative role.');
+ if(typeof p.confirmed!=='boolean'||typeof p.note!=='string'||p.note.length>400)throw new Error('Invalid profile confirmation or note.');
+ if(!Array.isArray(p.tasks)||p.tasks.length>15||(p.roleId&&p.tasks.length===0))throw new Error('Invalid task groups.');
+ const tasks=p.tasks.map(t=>{
+ strictObject(t,['label','domain','weight'],'task');
+ if(typeof t.label!=='string'||!t.label.trim()||t.label.length>80||!M.domains.some(d=>d.id===t.domain)||typeof t.weight!=='number'||!Number.isFinite(t.weight)||t.weight<0||t.weight>100)throw new Error('Invalid task group.');
+ return {label:t.label,domain:t.domain,weight:t.weight};});
+ if(p.confirmed&&(!p.roleId||!normalizeTasks(tasks)))throw new Error('Confirmed tasks must have a positive total.');
+ strictObject(p.answers,Object.keys(D.questions),'answers');
+ const answers=Object.fromEntries(Object.entries(D.questions).map(([k,q])=>{
+ const v=p.answers[k]??null;
+ if(v!==null&&!q.options.some(([score])=>score===v))throw new Error('Invalid answer for '+k);
+ return [k,v];}));
+ return {roleId:p.roleId,alternativeId:p.alternativeId,tasks,confirmed:p.confirmed,answers,note:p.note};
+}
+function parseScenario(text){
+ if(typeof text!=='string'||new TextEncoder().encode(text).length>65536)throw new Error('Scenario file must be at most 64 KiB.');
+ const p=JSON.parse(text);
+ const legacy=p?.version===2;
+ strictObject(p,legacy?['version','exportedAt','scenario','outcomes','profile']:['schema','version','modelVersion','careerVersion','evidenceVersion','exportedAt','scenario','outcomes','horizon','seed','timeline','originPreset','profile'],'scenario file');
+ if(!legacy&&(p.schema!=='ai-work-human-futures'||p.version!==3))throw new Error('Unsupported scenario schema/version.');
+ if(!legacy&&(p.modelVersion!==D.MODEL_VERSION||p.careerVersion!==D.CAREER_VERSION))throw new Error('This model/score version cannot be replayed. Open the matching release; no values were changed.');
+ if(p.exportedAt!==undefined&&(typeof p.exportedAt!=='string'||p.exportedAt.length>40||!Number.isFinite(Date.parse(p.exportedAt))))throw new Error('Invalid export date.');
+ const scenario=numberMap(p.scenario,Object.keys(M.presets.central),'technology assumptions');
+ const outcomes=numberMap(p.outcomes|| (legacy?M.outcomePresets.balanced:null),Object.keys(M.outcomePresets.balanced),'social assumptions');
+ let horizon=2035,seed=D.SEED,timeline={metric:'actual',threshold:.8,sort:'date'},originPreset='central',profile;
+ if(legacy){
+ if(p.profile)numberMap(p.profile,['ai','domain','runway','assets','legal','income','community','health','civic','offline'],'legacy profile');
+ }else{
+ if(![2030,2035,2040].includes(p.horizon))throw new Error('Unsupported planning year.');
+ if(!Number.isInteger(p.seed)||p.seed<0||p.seed>4294967295)throw new Error('Invalid seed.');
+ if(typeof p.evidenceVersion!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(p.evidenceVersion))throw new Error('Invalid evidence version.');
+ if(!Object.hasOwn(D.scenarioInfo,p.originPreset))throw new Error('Unknown source preset.');
+ strictObject(p.timeline,['metric','threshold','sort'],'timeline');
+ if(!['actual','technical'].includes(p.timeline.metric)||![.5,.8,.9].includes(p.timeline.threshold)||!['date','weight','original'].includes(p.timeline.sort))throw new Error('Invalid timeline selection.');
+ ({horizon,seed,timeline,originPreset}=p);
+ if(p.profile!==undefined)profile=profilePayload(p.profile);
+ }
+ return {scenario,outcomes,horizon,seed,timeline,originPreset,profile,notice:legacy?'Legacy v2 assumptions migrated without changing their 0–100 scales. Personal v2 scores were discarded; model v3 uses censored date quantiles, so milestone summaries may differ.':p.evidenceVersion!==D.EVIDENCE_VERSION?'Loaded with current evidence snapshot; numerical model version matches.':'Scenario imported. Profile answers unchanged unless explicitly included.'};
+}
+const api={RESILIENCE_WEIGHTS,normalizeTasks,exposure,preparedness,resilience,actions,parseScenario,profilePayload};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.FuturesCareer=api;
+})(globalThis);
+
+'use strict';
+(()=>{
+const M=FuturesModel,D=FuturesData,C=FuturesCareer;
+const {START_YEAR,END_YEAR,NEVER,SIMS,domains,presets,outcomePresets,clamp,yearRange,computeParams,domainValues,deterministicCurves,deterministicMilestone,firstYear,formatYear,formatRange,describeValue}=M;
+const {controlMeta,outcomeMeta,scenarioInfo,socialInfo}=D;
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let IS_COMPACT=matchMedia('(max-width:720px)').matches;
+let state={...presets.central},outcomeState={...outcomePresets.balanced},originPreset='central',socialPreset='balanced';
+let selectedDomain='software',lastResults=null,revision=0,updateTimer,resizeTimer,seed=D.SEED,horizon=2035;
+let profile=blankProfile(),cache=new Map(),simulationRuns=0,renderCount=0,lastDuration=0,returnFocus=null;
+function blankProfile(){return {roleId:'',alternativeId:'',tasks:[],confirmed:false,answers:Object.fromEntries(Object.keys(D.questions).map(k=>[k,null])),note:''};}
+function scenarioName(){return (Object.keys(state).some(k=>state[k]!==presets[originPreset][k])?'Custom scenario — modified from ':'')+scenarioInfo[originPreset].name;}
+function interpretation(v,m){return v<35?m.low:v>65?m.high:'Middle setting';}
+function rangeMarkup(key,m,value){
+ return '<div class="control" id="control-'+key+'"><div class="control-head"><label for="'+key+'">'+escapeHTML(m.label)+'</label><output id="'+key+'-value" class="value-pill" for="'+key+'"></output></div><input id="'+key+'" type="range" min="0" max="100" step="1" value="'+value+'" aria-describedby="'+key+'-meaning '+key+'-ends"><div class="endpoints" id="'+key+'-ends"><span>'+escapeHTML(m.low)+'</span><span>'+escapeHTML(m.high)+'</span></div><small id="'+key+'-meaning">'+escapeHTML(m.meaning)+'</small><a class="explain" href="#glossary-'+key+'">Explain<span class="sr-only"> '+escapeHTML(m.label)+'</span></a></div>';
+}
+function syncRange(key,m,v){
+ $('#'+key).value=v;
+ $('#'+key+'-value').textContent=v+' / 100 · '+interpretation(v,m);
+ $('#'+key).setAttribute('aria-valuetext',v+' out of 100, '+interpretation(v,m));
+}
+function syncControlUI(){Object.entries(controlMeta).forEach(([k,m])=>syncRange(k,m,state[k]));renderScenarioSummary();}
+function renderOutcomeControls(){
+ $('#outcome-controls').innerHTML=Object.entries(outcomeMeta).map(([k,m])=>rangeMarkup('outcome-'+k,m,outcomeState[k])).join('');
+ Object.entries(outcomeMeta).forEach(([k,m])=>{
+ syncRange('outcome-'+k,m,outcomeState[k]);
+ $('#outcome-'+k).addEventListener('input',e=>{outcomeState[k]=+e.target.value;syncRange('outcome-'+k,m,outcomeState[k]);socialPreset='';renderSocialSummary();renderOutcomes();});
+ });
+}
+function renderScenarioSummary(){
+ $$('.preset').forEach(b=>{b.classList.toggle('active',b.dataset.preset===originPreset&&Object.keys(state).every(k=>state[k]===presets[originPreset][k]));b.setAttribute('aria-pressed',b.classList.contains('active'));});
+ const changes=Object.keys(state).filter(k=>state[k]!==presets.central[k]).map(k=>'<li>'+escapeHTML(controlMeta[k].label)+': '+state[k]+' (reference '+presets.central[k]+', '+(state[k]>presets.central[k]?'+':'')+(state[k]-presets.central[k])+')</li>');
+ $('#scenario-summary').innerHTML='<h4>'+scenarioName()+'</h4><p class="privacy">'+scenarioInfo[originPreset].description+'</p><details><summary>Actual settings compared with reference</summary>'+(changes.length?'<ul>'+changes.join('')+'</ul>':'<p>All ten settings equal the reference preset.</p>')+'</details><button id="restore-preset" class="btn small">Restore '+scenarioInfo[originPreset].name+'</button><p class="privacy">Technology presets change technology assumptions only. Your social settings and career profile stay as entered.</p>';
+ $('#restore-preset').onclick=()=>selectPreset(originPreset);
+}
+function selectPreset(id){originPreset=id;state={...presets[id]};syncControlUI();renderCareer();updateAll();}
+function renderSocialSummary(){
+ $$('.outcome-preset').forEach(b=>{b.classList.toggle('active',b.dataset.outcomePreset===socialPreset);b.setAttribute('aria-pressed',b.classList.contains('active'));});
+ $('#social-summary').textContent=(socialPreset?socialInfo[socialPreset].name+' — '+socialInfo[socialPreset].description:'Custom social assumptions.')+' These buttons change social assumptions only, not technology or your profile.';
+}
+function renderGlossary(){
+ const all=[...Object.entries(controlMeta),...Object.entries(outcomeMeta).map(([k,m])=>['outcome-'+k,m])];
+ $('#glossary').innerHTML=all.map(([k,m])=>'<details id="glossary-'+k+'" class="glossary-entry"><summary>'+escapeHTML(m.label)+'</summary><p><b>Technical term:</b> '+escapeHTML(m.term)+'. '+escapeHTML(m.meaning)+'</p><p><b>Example:</b> '+escapeHTML(m.example)+'</p><p><b>Left → right:</b> '+escapeHTML(m.low)+' → '+escapeHTML(m.high)+'. '+escapeHTML(m.effect)+'</p><p><b>Limitation:</b> '+escapeHTML(m.limit)+'</p><a href="#control-'+k+'" data-return="'+k+'">Return to control</a></details>').join('');
+}
+function questionMarkup(k,q){
+ return '<label class="field">'+escapeHTML(q.label)+'<select id="answer-'+k+'"><option value="">'+(q.required?'Not answered':'Prefer not to answer / skip')+'</option>'+q.options.map(([v,l])=>'<option value="'+v+'">'+escapeHTML(l)+'</option>').join('')+'</select></label>';
+}
+function renderProfileForm(){
+ $('#career-role').value=profile.roleId;$('#alternative-role').value=profile.alternativeId;$('#planning-year').value=horizon;
+ $('#profile-note').value=profile.note;$('#note-preview').textContent=profile.note;
+ Object.keys(D.questions).forEach(k=>$('#answer-'+k).value=profile.answers[k]??'');
+ renderTaskEditor();renderCareer();
+}
+function renderTaskEditor(){
+ const role=D.roles.find(r=>r.id===profile.roleId);$('#task-step').hidden=!role;
+ $('#role-intro').textContent=role?role.intro:'No career or preparation answers are assumed.';
+ $('#task-editor').innerHTML=profile.tasks.map((t,i)=>'<div class="task-row"><label class="field task-label">Task group '+(i+1)+'<input maxlength="80" type="text" data-task-label="'+i+'" value="'+escapeHTML(t.label)+'"></label><label class="field">Model domain<select data-task-domain="'+i+'">'+domains.map(d=>'<option value="'+d.id+'"'+(t.domain===d.id?' selected':'')+'>'+d.name+'</option>').join('')+'</select></label><label class="field">Relative amount<input type="number" min="0" max="100" step="1" data-task-weight="'+i+'" value="'+t.weight+'"><span class="task-share" data-share="'+i+'"></span></label></div>').join('');
+ $$('[data-task-weight]').forEach(el=>el.oninput=()=>{profile.tasks[+el.dataset.taskWeight].weight=el.value===''?NaN:+el.value;profile.confirmed=false;renderCareer();});
+ $$('[data-task-label]').forEach(el=>el.oninput=()=>{profile.tasks[+el.dataset.taskLabel].label=el.value;profile.confirmed=false;renderCareer();});
+ $$('[data-task-domain]').forEach(el=>el.onchange=()=>{profile.tasks[+el.dataset.taskDomain].domain=el.value;profile.confirmed=false;renderCareer();});
+ if(role){const p=role.provenance;
+ $('#role-provenance').innerHTML='<p><b>Published context:</b> '+(p.sourceURL?'<a href="'+p.sourceURL+'" target="_blank" rel="noopener noreferrer">'+p.sourceTitle+' · '+p.sourceId+'</a>':'No occupation source for a custom role')+'</p><p>'+escapeHTML(p.scope)+'. '+escapeHTML(p.version)+'. '+(p.accessDate?'Accessed '+p.accessDate+'. Publication date not asserted.':'')+'</p><p><b>Mapping:</b> '+escapeHTML(p.mapping)+'</p><p>Descriptions are adapted from linked occupation context. Source providers do not endorse these mappings or scores.</p>';
+ }
+}
+function renderCareer(){
+ const role=D.roles.find(r=>r.id===profile.roleId);
+ if(!role){$('#career-results').innerHTML='<p class="notice">Choose a role to explore exposure. Scores remain incomplete until you confirm tasks and answer the required questions.</p>';$('#career-comparison').textContent='';return;}
+ const tasksValid=profile.tasks.every(t=>t.label.trim().length>0);
+ const normalized=tasksValid?C.normalizeTasks(profile.tasks):null;
+ $('#confirm-tasks').checked=profile.confirmed;$('#confirm-tasks').disabled=!normalized;
+ $('#task-total').textContent=normalized?'Shares normalized to 100%. Review and confirm to use them in your score.':'Enter nonempty task names and amounts from 0–100 with a positive total.';
+ profile.tasks.forEach((t,i)=>{const el=$('[data-share="'+i+'"]');if(el)el.textContent=normalized?(normalized[i].share*100).toFixed(1)+'% of mix':'—';});
+ const confirmed=profile.confirmed&&!!normalized;
+ $('#personal-intro').hidden=!confirmed;
+ $('#personal-intro').textContent=confirmed?'My selected role is '+role.name.toLowerCase()+', combining '+profile.tasks.filter(t=>t.weight>0).map(t=>t.label.toLowerCase()).join(', ')+'.':'';
+ const exp=normalized?C.exposure(profile.tasks,state,horizon):null;
+ const prep=C.preparedness(profile.answers),score=C.resilience(prep,exp,confirmed);
+ const fmt=v=>!Number.isFinite(v)?'—':Math.round(v)+'%';
+ const missing=prep.missing.map(k=>D.questions[k].label).join('; ');
+ $('#career-results').innerHTML='<div class="kicker">Your planning view · '+horizon+'</div><p class="score-detail">'+escapeHTML(scenarioName())+' · deterministic domain curves · '+(confirmed?'confirmed task mix':'provisional, unconfirmed task mix')+'</p><div class="career-summary"><div class="career-stat"><b>'+fmt(exp?.technical*100)+'</b><span>Technical task capability</span></div><div class="career-stat"><b>'+fmt(exp?.actual*100)+'</b><span>Modeled actual task substitution</span></div><div class="career-stat"><b>'+(score??'Incomplete')+'</b><span>Illustrative resilience · 0–100</span><small>A planning aid, not a prediction of keeping your job.</small></div></div><p class="notice">Task exposure is not an unemployment probability. Preparation and exposure are different: a well-prepared person may still face high exposure.</p><p class="score-detail"><b>Personal preparedness: '+(prep.score==null?'incomplete':Math.round(prep.score)+' / 100')+'.</b> '+(!confirmed?'Confirm your tasks. ':'')+(missing?'Unanswered required questions: '+escapeHTML(missing):'All required questions answered.')+'</p><details><summary>Why these values?</summary><p class="score-detail">Exposure uses your normalized task shares and the selected domains. Preparation is calculated from answers before the composite. '+(score!==null?'Resilience = 0.75 × '+prep.score.toFixed(1)+' + 0.25 × '+(100*(1-exp.actual)).toFixed(1)+' = '+score+' (rounded).':'No composite is assigned while required inputs are incomplete.')+'</p><ul class="score-detail">'+prep.components.map(c=>'<li>'+escapeHTML(c.label)+': '+c.value+' / 100, '+(c.weight*100).toFixed(1)+'% of answered weight, contribution '+c.contribution.toFixed(1)+'</li>').join('')+'</ul><p class="score-detail">Omitted: '+(prep.omitted.map(k=>escapeHTML(D.questions[k].label)).join('; ')||'none')+'. '+(prep.missing.length?'These partial contributions are provisional.':'Optional omissions renormalize the denominator to '+prep.denominator.toFixed(2)+'.')+'</p><p class="score-detail">Source coverage: '+(role.id==='custom'?'custom mapping has no occupation reference.':'one U.S. occupation reference; all three share estimates and domain mappings are author assumptions.')+' Sensitivity is explored by changing tasks/scenarios, not a statistical confidence interval.</p></details><h3>Three practical next steps</h3><ol class="priority-list">'+actionMarkup(role,profile.tasks,prep,exp)+'</ol>';
+ const alt=D.roles.find(r=>r.id===profile.alternativeId);
+ if(alt){const ae=C.exposure(alt.tasks,state,horizon),as=C.resilience(prep,ae,confirmed);
+ $('#career-comparison').innerHTML='<h3>Alternative: '+escapeHTML(alt.name)+'</h3><p class="score-detail">Illustrative default task shares: '+alt.tasks.map(t=>escapeHTML(t.label)+' '+t.weight+'%').join(' · ')+'. Same '+horizon+' scenario and preparation answers.</p><div class="career-summary"><div class="career-stat"><b>'+fmt(ae.technical*100)+'</b><span>Technical capability</span></div><div class="career-stat"><b>'+fmt(ae.actual*100)+'</b><span>Actual substitution</span></div><div class="career-stat"><b>'+(as??'Incomplete')+'</b><span>Illustrative resilience</span><small>A planning aid, not a prediction of keeping your job.</small></div></div><p class="score-detail">Personal preparedness stays '+(prep.score==null?'incomplete':Math.round(prep.score))+'; the exposure component changes. <a href="'+alt.provenance.sourceURL+'" target="_blank" rel="noopener noreferrer">O*NET source '+alt.provenance.sourceId+'</a> · author-assumed shares.</p><details><summary>Preparation actions for this alternative</summary><ol class="priority-list">'+actionMarkup(alt,alt.tasks,prep,ae)+'</ol></details>';
+ }else $('#career-comparison').textContent='';
+}
+function actionMarkup(role,tasks,prep,exp){
+ return C.actions(role,tasks,profile.answers,exp).map((a,i)=>'<li class="priority"><div class="priority-head"><h4>'+escapeHTML(a.title)+'</h4><span class="priority-rank">'+(i+1)+'</span></div><p>'+escapeHTML(a.text)+'</p><p>'+escapeHTML(a.reason)+'</p></li>').join('');
+}
+function renderEvidence(){
+ const age=Math.max(0,Math.floor((Date.now()-Date.parse(D.EVIDENCE_VERSION+'T00:00:00Z'))/86400000));
+ $('#evidence-status').textContent='Verified snapshot: '+D.EVIDENCE_VERSION+' ('+age+' days old). Model '+D.MODEL_VERSION+'. Automatic updates: disabled. Latest included publication: 29 September 2025.';
+ $('#evidence-cards').innerHTML=D.evidence.map(e=>'<article class="evidence-card"><span class="tag">'+e.kind+'</span><h3>'+e.title+'</h3><a target="_blank" rel="noopener noreferrer" href="'+e.url+'">'+e.publisher+'</a><p>Published '+e.published+' · reviewed '+e.reviewed+'</p><p>'+e.eventNote+'</p><p>'+e.summary+'</p><div class="tag-row">'+e.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><p><b>Limitations:</b> '+e.limitation+'</p><p><b>Model impact: '+e.impact+'</b></p></article>').join('');
+}
+function renderSensitivity(){
+ const host=$('#sensitivity');let key='post25',base=deterministicMilestone(state,key);
+ if(!Number.isFinite(base)){key='weighted80';base=deterministicMilestone(state,key);}
+ const useDates=Number.isFinite(base),rows=[];
+ for(const [k,m] of Object.entries(controlMeta)){
+ const lo={...state,[k]:clamp(state[k]-15,0,100)},hi={...state,[k]:clamp(state[k]+15,0,100)};
+ if(useDates){
+ const a=deterministicMilestone(lo,key),b=deterministicMilestone(hi,key);
+ rows.push({label:m.label,low:Number.isFinite(a)?a-base:null,high:Number.isFinite(b)?b-base:null});
+ }else{
+ const i=2035-START_YEAR,b=deterministicCurves(state).actual[i]*100;
+ rows.push({label:m.label,low:deterministicCurves(lo).actual[i]*100-b,high:deterministicCurves(hi).actual[i]*100-b});
+ }
+ }
+ rows.sort((a,b)=>Math.max(Math.abs(b.low||0),Math.abs(b.high||0))-Math.max(Math.abs(a.low||0),Math.abs(a.high||0)));
+ const max=Math.max(1,...rows.flatMap(r=>[Math.abs(r.low||0),Math.abs(r.high||0)]));
+ const target=useDates?(key==='post25'?'remaining human work ≤25%':'80% weighted task substitution (fallback: the 25% remaining-work threshold is not reached)'):'actual substitution in 2035, percentage-point change (fallback: neither date threshold is reached)';
+ host.innerHTML='<p class="notice">Metric: '+target+'. Lower and higher settings each move 15 points, bounded to 0–100. “Not reached” is never subtracted as a year.</p>'+rows.map(r=>{
+ const vals=[r.low,r.high].filter(x=>x!==null),neg=Math.max(0,...vals.map(x=>-x)),pos=Math.max(0,...vals);
+ const f=v=>v===null?'not reached by 2100':(v>0?'+':'')+(useDates?v:v.toFixed(1))+(useDates?' years':' pp');
+ return '<div class="sensitivity-row"><span class="sensitivity-label">'+escapeHTML(r.label)+'</span><div><div class="sensitivity-track"><span class="sensitivity-mid"></span><span class="sens-bar sens-earlier" style="width:'+neg/max*48+'%"></span><span class="sens-bar sens-later" style="width:'+pos/max*48+'%"></span></div><small class="score-detail">Lower: '+f(r.low)+' · Higher: '+f(r.high)+'</small></div></div>';
+ }).join('');
+}
+function renderAssumptions(){
+ $('#assumption-body').innerHTML=domains.map(d=>'<tr><td>'+d.name+'</td><td>'+d.weight+'%</td><td>'+Math.round(d.digital*100)+'%</td><td>'+Math.round(d.physical*100)+'%</td><td>'+Math.round(d.reg*100)+'</td><td>'+Math.round(d.pref*100)+'</td><td>'+d.cog+'</td><td>'+d.robot+'</td></tr>').join('');
+ $('#sources').innerHTML='<p class="privacy">All domain dates, weights, ceilings and social equations are illustrative author assumptions. Linked research gives context; it does not validate these numbers. O*NET supplies occupation descriptions, not exposure scores; ILO research is a separate source.</p>'+D.evidence.map(e=>'<div class="source"><b>'+e.publisher+' · '+e.title+'</b><p>'+e.published+' · accessed 2026-10-11</p><a href="'+e.url+'" target="_blank" rel="noopener noreferrer">'+e.url+'</a></div>').join('')+'<div class="source"><b>O*NET occupation context</b><p>This application adapts occupational descriptions from O*NET OnLine. O*NET® is a trademark of the U.S. Department of Labor, Employment and Training Administration. Used under CC BY 4.0. Task shares and model mappings are our modifications. No endorsement is implied. Individual role links are shown in the profile.</p><a target="_blank" rel="noopener noreferrer" href="https://www.onetonline.org/help/license">O*NET attribution and data terms</a> · <a target="_blank" rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></div>';
+ const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Exact social weighting equations (author assumptions)';details.append(summary);const pre=document.createElement('pre');pre.className='method-equations';pre.textContent=computeOutcomeWeights.toString();details.append(pre);$('#sources').after(details);
+ $('#weight-table').innerHTML='<table><thead><tr><th>Preparation component</th><th>Base weight</th><th>Input</th></tr></thead><tbody>'+Object.values(D.questions).map(q=>'<tr><td>'+q.label+'</td><td>'+q.weight*100+'%</td><td>'+(q.required?'Required':'Optional')+'</td></tr>').join('')+'</tbody></table>';
+}
+function setStatus(t){$('#update-status').textContent=t;}
+function showError(e){$('#app-error-text').textContent=(e?.message||String(e))+'. Last valid results are retained; correct the input and retry.';$('#app-error').classList.add('show');setStatus('Update failed — last valid results retained.');}
+function clearError(){$('#app-error').classList.remove('show');}
+function scheduleUpdate(){revision++;clearTimeout(updateTimer);setStatus('Updating scenario — charts retain the last completed result.');updateTimer=setTimeout(updateAll,180);}
+async function updateAll(){
+ clearTimeout(updateTimer);const token=++revision;clearError();
+ const snapshot={...state},options={timelineMetric:$('#timeline-metric').value,timelineThreshold:+$('#timeline-threshold').value,seed};
+ const key=JSON.stringify([snapshot,options]);const start=performance.now();$('#loading').style.display='block';
+ setStatus('Updating scenario — charts retain the last completed result.');
+ try{
+ let result=cache.get(key);
+ if(!result){
+ simulationRuns++;const it=M.simulateSteps(snapshot,options);let step;
+ do{step=it.next();if(!step.done){await new Promise(r=>setTimeout(r,0));if(token!==revision)return;}}while(!step.done);
+ result=step.value;if(token!==revision)return;
+ cache.set(key,result);if(cache.size>8)cache.delete(cache.keys().next().value);
+ }
+ if(token!==revision)return;
+ lastResults=result;
+ renderMetrics();renderGlobalChart();renderTimeline();renderDomainDetail();renderSensitivity();renderOutcomes();renderCareer();renderCount++;
+ lastDuration=Math.round(performance.now()-start);
+ setStatus('Updated in '+lastDuration+' ms · '+SIMS+' seeded paths · '+scenarioName());
+ }catch(e){if(token===revision)showError(e);}
+ finally{if(token===revision)$('#loading').style.display='none';}
+}
+function scenarioPayload(includeProfile=false){
+ const p={schema:'ai-work-human-futures',version:3,modelVersion:D.MODEL_VERSION,careerVersion:D.CAREER_VERSION,evidenceVersion:D.EVIDENCE_VERSION,exportedAt:new Date().toISOString(),scenario:{...state},outcomes:{...outcomeState},horizon,seed,timeline:{metric:$('#timeline-metric').value,threshold:+$('#timeline-threshold').value,sort:$('#timeline-sort').value},originPreset};
+ if(includeProfile)p.profile=C.profilePayload(profile);
+ return p;
+}
+function applyImportedText(text){
+ const p=C.parseScenario(text); // Full validation precedes every mutation.
+ state=p.scenario;outcomeState=p.outcomes;originPreset=p.originPreset;seed=p.seed;horizon=p.horizon;socialPreset='';
+ $('#timeline-metric').value=p.timeline.metric;$('#timeline-threshold').value=p.timeline.threshold;$('#timeline-sort').value=p.timeline.sort;
+ if(p.profile)profile=p.profile;
+ syncControlUI();renderOutcomeControls();renderSocialSummary();renderProfileForm();updateAll();
+ $('#import-notice').textContent=p.notice;return p.notice;
+}
+function refreshExport(){try{$('#json-text').value=JSON.stringify(scenarioPayload($('#export-profile').checked),null,2);$('#json-status').textContent=$('#export-profile').checked?'Contains personal information. Share only with people you choose.':'Scenario only: biography, role and preparation answers excluded.';}catch(e){$('#export-profile').checked=false;$('#json-text').value=JSON.stringify(scenarioPayload(false),null,2);$('#json-status').textContent='Profile not included: '+e.message;}}
+function openJsonPanel(){returnFocus=document.activeElement;$('#export-profile').checked=false;refreshExport();$('#json-panel').classList.add('open');$('.layout').inert=true;$('.hero').inert=true;$('.top-nav').inert=true;$('#json-text').focus();}
+function closeJsonPanel(){$('#json-panel').classList.remove('open');$('.layout').inert=false;$('.hero').inert=false;$('.top-nav').inert=false;returnFocus?.focus();}
+function initialize(){
+ Object.entries(controlMeta).forEach(([k,m])=>{$('#'+k).closest('.control').outerHTML=rangeMarkup(k,m,state[k]);});
+ $$('.preset').forEach(b=>{const info=scenarioInfo[b.dataset.preset];b.innerHTML=info.name+'<small>'+info.subtitle+'</small>';b.onclick=()=>selectPreset(b.dataset.preset);});
+ const summary=document.createElement('div');summary.id='scenario-summary';$('#preset-grid').after(summary);
+ const guide=document.createElement('details');guide.id='scenario-guide';guide.innerHTML='<summary>Explain all six presets</summary>'+Object.values(scenarioInfo).map(s=>'<details><summary>'+s.name+'</summary><p>'+s.description+'</p></details>').join('');summary.after(guide);
+ const social=document.createElement('p');social.id='social-summary';social.className='notice';$('#outcomes-section .section-title').after(social);
+ $$('.outcome-preset').forEach(b=>{const i=socialInfo[b.dataset.outcomePreset];b.innerHTML=i.name+'<small>'+i.subtitle+'</small>';b.onclick=()=>{socialPreset=b.dataset.outcomePreset;outcomeState={...outcomePresets[socialPreset]};renderOutcomeControls();renderSocialSummary();renderOutcomes();};});
+ const socialGuide=document.createElement('details');socialGuide.innerHTML='<summary>Explain the four social presets</summary>'+Object.values(socialInfo).map(s=>'<p><b>'+s.name+':</b> '+s.description+'</p>').join('');social.after(socialGuide);
+ $('#domain-select').innerHTML=domains.map(d=>'<option value="'+d.id+'">'+d.name+'</option>').join('');
+ $('#career-role').innerHTML+='<option disabled>Digital, physical and people-facing work</option>'+D.roles.map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');
+ $('#alternative-role').innerHTML+=D.roles.filter(r=>r.id!=='custom').map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');
+ for(const [k,q] of Object.entries(D.questions))$(q.required?'#questionnaire':'#optional-questions').insertAdjacentHTML('beforeend',questionMarkup(k,q));
+ const note=document.createElement('p');note.id='import-notice';note.className='status-line';note.setAttribute('role','status');$('#update-status').after(note);
+ Object.entries(controlMeta).forEach(([k,m])=>$('#'+k).addEventListener('input',e=>{state[k]=+e.target.value;syncRange(k,m,state[k]);renderScenarioSummary();renderCareer();renderOutcomes();scheduleUpdate();}));
+ ['timeline-metric','timeline-threshold'].forEach(id=>$('#'+id).onchange=updateAll);
+ $('#timeline-sort').onchange=()=>lastResults&&renderTimeline();
+ $('#domain-select').onchange=e=>{selectedDomain=e.target.value;if(lastResults){renderTimeline();renderDomainDetail();}};
+ $('#career-role').onchange=e=>{profile.roleId=e.target.value;profile.tasks=D.roles.find(r=>r.id===profile.roleId)?.tasks.map(t=>({...t}))||[];profile.confirmed=false;renderTaskEditor();renderCareer();};
+ $('#alternative-role').onchange=e=>{profile.alternativeId=e.target.value;renderCareer();};
+ $('#planning-year').onchange=e=>{horizon=+e.target.value;renderCareer();};
+ $('#confirm-tasks').onchange=e=>{profile.confirmed=e.target.checked;renderCareer();};
+ Object.keys(D.questions).forEach(k=>$('#answer-'+k).onchange=e=>{profile.answers[k]=e.target.value===''?null:+e.target.value;renderCareer();});
+ $('#profile-note').oninput=e=>{profile.note=e.target.value;$('#note-preview').textContent=profile.note;};
+ $('#clear-profile').onclick=()=>{profile=blankProfile();renderProfileForm();};
+ $('#recalculate-btn').onclick=updateAll;
+ $('#reset-btn').textContent='Reset scenarios';
+ $('#reset-btn').onclick=()=>{state={...presets.central};originPreset='central';outcomeState={...outcomePresets.balanced};socialPreset='balanced';seed=D.SEED;syncControlUI();renderOutcomeControls();renderSocialSummary();renderCareer();updateAll();};
+ $('#print-btn').onclick=()=>window.print();
+ $$('[data-scroll]').forEach(b=>b.onclick=()=>$(b.dataset.scroll).scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'}));
+ $('#export-btn').onclick=openJsonPanel;$('#export-profile').onchange=refreshExport;
+ $('#close-json-btn').onclick=closeJsonPanel;
+ $('#json-panel').onclick=e=>{if(e.target===$('#json-panel'))closeJsonPanel();};
+ $('#copy-json-btn').onclick=async()=>{try{await navigator.clipboard.writeText($('#json-text').value);$('#json-status').textContent='Copied.';}catch{$('#json-text').select();$('#json-status').textContent='Use your browser Copy command on the selected JSON.';}};
+ $('#download-json-btn').onclick=()=>{const url=URL.createObjectURL(new Blob([$('#json-text').value],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='ai-work-human-futures-scenario.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ $('#import-json-btn').onclick=()=>{try{applyImportedText($('#json-text').value);closeJsonPanel();}catch(e){$('#json-status').textContent='Import rejected: '+e.message;}};
+ $('#import-btn').onclick=()=>$('#import-file').click();
+ $('#import-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{if(f.size>65536)throw new Error('Scenario file must be at most 64 KiB.');applyImportedText(await f.text());}catch(err){showError(err);}finally{e.target.value='';}};
+ document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const target=$(a.getAttribute('href'));if(target?.tagName==='DETAILS')target.open=true;if(a.dataset.return){e.preventDefault();const input=$('#'+a.dataset.return);input.closest('.control').scrollIntoView({block:'center',behavior:'instant'});input.focus({preventScroll:true});}});
+ document.addEventListener('keydown',e=>{
+ if(!$('#json-panel').classList.contains('open'))return;
+ if(e.key==='Escape'){closeJsonPanel();return;}
+ if(e.key==='Tab'){const focusables=$$('#json-panel button,#json-panel input,#json-panel textarea');const first=focusables[0],last=focusables.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+ });
+ window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{IS_COMPACT=matchMedia('(max-width:720px)').matches;if(lastResults){renderGlobalChart();renderTimeline();renderDomainDetail();}},150);});
+ renderGlossary();renderEvidence();syncControlUI();renderOutcomeControls();renderSocialSummary();renderProfileForm();renderAssumptions();updateAll();
+}
+// Reused baseline chart renderers are inserted here by the build.
+  function svg(tag, attrs={}) {
+    const el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    return el;
+  }
+  function pathFrom(points) { return points.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(' '); }
+
+  function renderMetrics() {
+    const m=lastResults.milestoneQ;
+    const cards=[
+      ['metric-majority','metric-majority-range',m.majority],
+      ['metric-postlabor','metric-postlabor-range',m.post25],
+      ['metric-alltech','metric-alltech-range',m.allTech80],
+      ['metric-allactual','metric-allactual-range',m.allActual80]
+    ];
+    cards.forEach(([vId,rId,q])=>{
+      $('#'+vId).textContent=formatYear(q.q50);
+      $('#'+rId).textContent=formatRange(q.q10,q.q90);
+    });
+  }
+
+  function renderGlobalChart() {
+    const host=$('#global-chart'); host.innerHTML='';
+    const width=Math.max(IS_COMPACT ? 320 : 620,host.clientWidth||900), height=IS_COMPACT ? 320 : 365;
+    const pad={l:56,r:22,t:18,b:42};
+    const W=width-pad.l-pad.r,H=height-pad.t-pad.b;
+    const x=y=>pad.l+(y-START_YEAR)/(END_YEAR-START_YEAR)*W;
+    const yy=v=>pad.t+(1-v)*H;
+    const s=svg('svg',{viewBox:`0 0 ${width} ${height}`,class:'chart-svg',role:'img','aria-label':'Automation and human labor demand over time'});
+
+    [0,.25,.5,.75,1].forEach(v=>{
+      s.appendChild(svg('line',{x1:pad.l,y1:yy(v),x2:width-pad.r,y2:yy(v),stroke:'#203945','stroke-width':'1'}));
+      const t=svg('text',{x:pad.l-9,y:yy(v)+4,fill:'#91a8b0','font-size':'11','text-anchor':'end'}); t.textContent=Math.round(v*100)+'%'; s.appendChild(t);
+    });
+    for(let yr=2030;yr<=2100;yr+=10){
+      s.appendChild(svg('line',{x1:x(yr),y1:pad.t,x2:x(yr),y2:height-pad.b,stroke:'#152c36','stroke-width':'1'}));
+      const t=svg('text',{x:x(yr),y:height-15,fill:'#91a8b0','font-size':'11','text-anchor':'middle'}); t.textContent=yr; s.appendChild(t);
+    }
+    const cq=lastResults.curveQ;
+    const upper=yearRange.map((yr,i)=>[x(yr),yy(cq.actual.q90[i])]);
+    const lower=[...yearRange].reverse().map((yr,ri)=>{const i=yearRange.length-1-ri;return [x(yr),yy(cq.actual.q10[i])];});
+    s.appendChild(svg('path',{d:pathFrom([...upper,...lower])+' Z',fill:'rgba(94,226,192,.14)',stroke:'rgba(94,226,192,.25)','stroke-width':'1'}));
+    const lines=[
+      {vals:cq.technical.q50,color:'#69bfff',width:2,dash:'6 5'},
+      {vals:cq.actual.q50,color:'#5ee2c0',width:3,dash:''},
+      {vals:cq.human.q50,color:'#a891ff',width:3,dash:''}
+    ];
+    lines.forEach(line=>s.appendChild(svg('path',{d:pathFrom(yearRange.map((yr,i)=>[x(yr),yy(line.vals[i])])),fill:'none',stroke:line.color,'stroke-width':line.width,'stroke-dasharray':line.dash,'stroke-linejoin':'round','stroke-linecap':'round'})));
+
+    const overlay=svg('rect',{x:pad.l,y:pad.t,width:W,height:H,fill:'transparent',cursor:'crosshair'});
+    const hoverLine=svg('line',{x1:0,y1:pad.t,x2:0,y2:height-pad.b,stroke:'#8098a1','stroke-width':'1','stroke-dasharray':'3 4',visibility:'hidden'});
+    s.appendChild(hoverLine); s.appendChild(overlay);
+    const tip=$('#tooltip');
+    const readout=$('#chart-readout');
+    const inspectPoint=ev=>{
+      const rect=s.getBoundingClientRect();
+      const clientX=ev.clientX ?? (ev.touches && ev.touches[0] ? ev.touches[0].clientX : rect.left);
+      const sx=(clientX-rect.left)/Math.max(1,rect.width)*width;
+      const yr=Math.round(START_YEAR+clamp((sx-pad.l)/W,0,1)*(END_YEAR-START_YEAR));
+      const i=clamp(yr-START_YEAR,0,yearRange.length-1);
+      hoverLine.setAttribute('x1',x(yr));hoverLine.setAttribute('x2',x(yr));hoverLine.setAttribute('visibility','visible');
+      const html=`<b>${yr}</b><span>Technical ${(cq.technical.q50[i]*100).toFixed(0)}%</span><span>Actual substitution ${(cq.actual.q50[i]*100).toFixed(0)}%</span><span>Human labor demand ${(cq.human.q50[i]*100).toFixed(0)}%</span>`;
+      if(readout) readout.innerHTML=html;
+      if(ev.pointerType!=='touch' && ev.type!=='pointerdown'){
+        tip.innerHTML=html.replaceAll('<span>','<br>').replaceAll('</span>','');
+        tip.style.display='block'; tip.style.left=(clientX+12)+'px'; tip.style.top=(ev.clientY+12)+'px';
+      } else { tip.style.display='none'; }
+    };
+    overlay.style.touchAction='pan-y';
+    overlay.addEventListener('pointermove',inspectPoint);
+    overlay.addEventListener('pointerdown',inspectPoint);
+    overlay.addEventListener('pointerleave',()=>{tip.style.display='none';});
+    host.appendChild(s);
+    inspectPoint({clientX:host.getBoundingClientRect().left + host.clientWidth*.5, clientY:0, pointerType:'touch', type:'pointerdown'});
+  }
+
+  function renderTimeline() {
+    const host=$('#timeline-chart');host.innerHTML='';
+    const width=Math.max(760,host.clientWidth||860);
+    const rowH=37, pad={l:245,r:82,t:18,b:34};
+    let rows=domains.map(d=>({...d,q:lastResults.domainQ[d.id]}));
+    const sort=$('#timeline-sort').value;
+    if(sort==='date') rows.sort((a,b)=>a.q.q50-b.q.q50);
+    if(sort==='weight') rows.sort((a,b)=>b.weight-a.weight);
+    const height=pad.t+pad.b+rowH*rows.length;
+    const plotW=width-pad.l-pad.r;
+    const x=y=>pad.l+(clamp(y,START_YEAR,END_YEAR+5)-START_YEAR)/(END_YEAR+5-START_YEAR)*plotW;
+    const s=svg('svg',{viewBox:`0 0 ${width} ${height}`,class:'chart-svg',role:'img','aria-label':'Domain automation timeline'});
+    s.style.width=width+'px';s.style.height=height+'px';
+    for(let yr=2030;yr<=2100;yr+=10){
+      s.appendChild(svg('line',{x1:x(yr),y1:pad.t,x2:x(yr),y2:height-pad.b,stroke:'#18313b'}));
+      const tx=svg('text',{x:x(yr),y:height-10,fill:'#91a8b0','font-size':'10','text-anchor':'middle'});tx.textContent=yr;s.appendChild(tx);
+    }
+    rows.forEach((d,i)=>{
+      const y=pad.t+i*rowH;
+      const g=svg('g',{class:`timeline-row${selectedDomain===d.id?' selected':''}`,'data-domain':d.id,tabindex:'0',role:'button','aria-label':`View ${d.name} details`});
+      g.appendChild(svg('rect',{class:'row-bg',x:0,y,width,height:rowH-1,rx:7,fill:i%2?'rgba(255,255,255,.012)':'transparent'}));
+      const name=svg('text',{x:8,y:y+16,fill:'#d7e7e9','font-size':'11.5','font-weight':'650'});name.textContent=d.name;g.appendChild(name);
+      const weight=svg('text',{x:8,y:y+29,fill:'#91a8b0','font-size':'9'});weight.textContent=`${d.weight}% illustrative work-hour weight`;g.appendChild(weight);
+      if(d.q.neverShare>.5){
+        const t=svg('text',{x:width-pad.r+8,y:y+23,fill:'#ffb0bd','font-size':'10'});t.textContent='not by 2100';g.appendChild(t);
+        if(d.q.q10<=END_YEAR){
+          g.appendChild(svg('line',{x1:x(d.q.q10),y1:y+19,x2:x(END_YEAR),y2:y+19,stroke:'#ff8297','stroke-width':'7','stroke-linecap':'round',opacity:'.35'}));
+        }
+      } else {
+        const q10=Math.min(d.q.q10,END_YEAR),q50=Math.min(d.q.q50,END_YEAR),q90=Math.min(d.q.q90,END_YEAR);
+        g.appendChild(svg('line',{x1:x(q10),y1:y+19,x2:x(q90),y2:y+19,stroke:'#5ee2c0','stroke-width':'8','stroke-linecap':'round',opacity:'.28'}));
+        if(!Number.isFinite(d.q.q90)){const title=svg('title');title.textContent='Upper modeled threshold not reached by 2100';g.appendChild(title);g.appendChild(svg('text',{x:x(END_YEAR)-10,y:y+12,fill:'#91a8b0','font-size':'9'})).textContent='→';}
+        g.appendChild(svg('circle',{cx:x(q50),cy:y+19,r:5.5,fill:'#5ee2c0',stroke:'#071016','stroke-width':'2'}));
+        const t=svg('text',{x:Math.min(x(q50)+9,width-pad.r+4),y:y+23,fill:'#bcd2d5','font-size':'10'});t.textContent=formatYear(d.q.q50);g.appendChild(t);
+      }
+      const choose=()=>{selectedDomain=d.id;const ds=$('#domain-select');if(ds)ds.value=d.id;renderTimeline();renderDomainDetail();};
+      g.addEventListener('click',choose);
+      g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();choose();}});
+      s.appendChild(g);
+    });
+    host.appendChild(s);
+  }
+
+  function centralDomainDates(d) {
+    const p=computeParams(d,state,{});
+    const valsA=yearRange.map(y=>domainValues(d,y,p,'actual'));
+    const valsT=yearRange.map(y=>domainValues(d,y,p,'technical'));
+    return {
+      p,
+      actual50:firstYear(valsA,v=>v>=.5),actual80:firstYear(valsA,v=>v>=.8),actual90:firstYear(valsA,v=>v>=.9),
+      tech50:firstYear(valsT,v=>v>=.5),tech80:firstYear(valsT,v=>v>=.8),tech90:firstYear(valsT,v=>v>=.9),
+      valsA,valsT
+    };
+  }
+  function bottleneckText(d, dates) {
+    const p=dates.p;
+    const candidates=[['cognitive capability',p.cogMid],['reliability and autonomy',p.relMid],['robotics / embodiment',p.robotMid*d.physical + p.relMid*(1-d.physical)],['deployment and integration',p.adoptMid]];
+    candidates.sort((a,b)=>b[1]-a[1]);
+    if (p.cap < .8) return `The strongest limit is not intelligence: under these settings, demand for human presence or legitimacy caps actual substitution near ${(p.cap*100).toFixed(0)}%.`;
+    return `The current binding bottleneck is ${candidates[0][0]}. The model’s effective midpoint for that constraint is around ${Math.round(candidates[0][1])}.`;
+  }
+  function renderDomainDetail() {
+    const host=$('#domain-detail');
+    const d=domains.find(x=>x.id===selectedDomain)||domains[0];
+    const dates=centralDomainDates(d);
+    const factors=[
+      ['Digital task share',d.digital],['Embodied task share',d.physical],['Regulatory friction',d.reg],['Human-presence preference',d.pref],['Safety criticality',d.safety],['Context / messiness',d.context]
+    ];
+    host.innerHTML=`
+      <div class="kicker">Selected domain</div>
+      <h3>${d.name}</h3>
+      <div class="desc">${d.desc}</div>
+      <div class="tag-row"><span class="tag">${d.weight}% model weight</span><span class="tag">${Math.round(d.digital*100)}% digital</span><span class="tag">${Math.round(d.physical*100)}% embodied</span></div>
+      <div class="mini-stat-grid">
+        <div class="mini-stat"><b>${formatYear(dates.tech80)}</b><span>80% technical capability</span></div>
+        <div class="mini-stat"><b>${formatYear(dates.actual80)}</b><span>80% actual substitution</span></div>
+        <div class="mini-stat"><b>${Math.round(dates.p.cap*100)}%</b><span>long-run actual ceiling</span></div>
+        <div class="mini-stat"><b>±${d.unc}y</b><span>domain uncertainty scale</span></div>
+      </div>
+      <div class="bottleneck">${bottleneckText(d,dates)}</div>
+      <p class="desc" style="margin-top:13px"><b style="color:#d9e8e9">Interpretation:</b> ${d.signal}</p>
+      <div id="domain-mini-chart" style="height:150px;margin-top:10px"></div>
+      <div class="factor-list">${factors.map(([name,v])=>`<div class="factor-row"><span>${name}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round(v*100)}%"></span></span><span>${Math.round(v*100)}</span></div>`).join('')}</div>
+    `;
+    renderDomainMiniChart(dates);
+  }
+  function renderDomainMiniChart(dates) {
+    const host=$('#domain-mini-chart'); const width=Math.max(280,host.clientWidth||300),height=145,pad={l:32,r:8,t:8,b:24};
+    const x=y=>pad.l+(y-START_YEAR)/(END_YEAR-START_YEAR)*(width-pad.l-pad.r), yy=v=>pad.t+(1-v)*(height-pad.t-pad.b);
+    const s=svg('svg',{viewBox:`0 0 ${width} ${height}`,class:'chart-svg',role:'img','aria-label':'Domain automation timeline'});
+    s.style.width=width+'px';s.style.height=height+'px';
+    [.5,.8].forEach(v=>s.appendChild(svg('line',{x1:pad.l,y1:yy(v),x2:width-pad.r,y2:yy(v),stroke:'#203945','stroke-dasharray':'3 4'})));
+    [2030,2050,2070,2090].forEach(y=>{const t=svg('text',{x:x(y),y:height-6,fill:'#91a8b0','font-size':'9','text-anchor':'middle'});t.textContent=y;s.appendChild(t);});
+    s.appendChild(svg('path',{d:pathFrom(yearRange.map((y,i)=>[x(y),yy(dates.valsT[i])])),fill:'none',stroke:'#69bfff','stroke-width':'2','stroke-dasharray':'5 4'}));
+    s.appendChild(svg('path',{d:pathFrom(yearRange.map((y,i)=>[x(y),yy(dates.valsA[i])])),fill:'none',stroke:'#5ee2c0','stroke-width':'2.5'}));
+    host.appendChild(s);
+  }
+
+
+  function scenarioSpeed() {
+    return clamp((state.capability+state.reliability+state.feedback+state.compute+state.robotics+state.adoption + (100-state.supply)+(100-state.regulation))/800,0,1);
+  }
+  const outcomeScenarios=[
+    {id:'shared',name:'Shared abundance',desc:'AI-generated wealth is broadly owned or taxed; basic services and social dividends expand; paid work becomes more optional.',vector:{material:92,equality:86,autonomy:84,meaning:72,stability:86,safety:80,skills:65}},
+    {id:'human',name:'Human-centered mixed economy',desc:'Workweeks shrink, AI handles drudgery, and human roles remain important in care, leadership, culture, and legitimacy.',vector:{material:82,equality:72,autonomy:82,meaning:84,stability:82,safety:82,skills:78}},
+    {id:'oligarchic',name:'Oligarchic abundance',desc:'Output is high, but access and political power depend on ownership of compute, models, infrastructure, and platforms.',vector:{material:72,equality:18,autonomy:38,meaning:45,stability:48,safety:55,skills:42}},
+    {id:'authoritarian',name:'Authoritarian techno-state',desc:'Automated administration and surveillance provide order or services while sharply reducing privacy, dissent, and personal autonomy.',vector:{material:66,equality:44,autonomy:12,meaning:35,stability:62,safety:48,skills:35}},
+    {id:'chaotic',name:'Chaotic transition',desc:'Capability and displacement outrun institutions, producing unemployment shocks, fiscal stress, polarization, and uneven access.',vector:{material:42,equality:24,autonomy:45,meaning:38,stability:18,safety:32,skills:50}},
+    {id:'loss',name:'Loss of control / catastrophic failure',desc:'Advanced systems or malicious use overwhelm human control. Outcomes range from severe disempowerment to catastrophe.',vector:{material:10,equality:15,autonomy:5,meaning:12,stability:3,safety:2,skills:18}}
+  ];
+
+  function computeOutcomeWeights() {
+    const x=Object.fromEntries(Object.entries(outcomeState).map(([k,v])=>[k,v/100]));
+    const speed=scenarioSpeed(), concentration=1-x.ownership, fragility=1-x.transition;
+    const scores={
+      shared:1.5*x.safety+1.6*x.ownership+1.5*x.redistribution+1.1*x.democracy+.9*x.transition+.6*x.meaning+.6*x.coordination-.8*x.surveillance-.3*speed,
+      human:1.1*x.safety+.9*x.ownership+.8*x.redistribution+1.3*x.democracy+1.2*x.transition+1.2*x.meaning+.5*(state.newTasks/100)+.5*(state.humanPref/100)-.5*x.surveillance-.2*speed,
+      oligarchic:1.4*concentration+1.2*(1-x.redistribution)+.6*x.safety+.8*speed+.7*(1-x.democracy)+.3*x.surveillance,
+      authoritarian:1.3*x.surveillance+1.1*(1-x.democracy)+.8*concentration+.7*speed+.2*x.safety-.6*x.coordination,
+      chaotic:1.2*speed+1.2*fragility+1.0*(1-x.redistribution)+.8*(1-x.coordination)+.7*(state.supply/100)+.5*(1-x.safety),
+      loss:1.7*(1-x.safety)+1.1*speed+1.0*(state.feedback/100)+.8*(1-x.coordination)+.4*(1-x.democracy)-.6*x.transition
+    };
+    const vals=Object.values(scores), max=Math.max(...vals);
+    const exps=Object.fromEntries(Object.entries(scores).map(([k,v])=>[k,Math.exp((v-max)/1.15)]));
+    const total=Object.values(exps).reduce((a,b)=>a+b,0);
+    return Object.fromEntries(Object.entries(exps).map(([k,v])=>[k,v/total]));
+  }
+
+
+  function renderOutcomes() {
+    const weights=computeOutcomeWeights();
+    const host=$('#outcome-bars');host.innerHTML='';
+    const ordered=[...outcomeScenarios].sort((a,b)=>weights[b.id]-weights[a.id]);
+    ordered.forEach(sc=>{
+      const pct=weights[sc.id]*100;
+      const row=document.createElement('div');row.className='outcome-row';
+      row.innerHTML=`<div class="outcome-name">${sc.name}</div><div class="outcome-track"><div class="outcome-fill" style="width:${pct}%"></div></div><div class="outcome-pct">${pct.toFixed(0)}%</div>`;
+      host.appendChild(row);
+    });
+    const top=ordered[0];
+    const dims={material:0,equality:0,autonomy:0,meaning:0,stability:0,safety:0,skills:0};
+    outcomeScenarios.forEach(sc=>Object.keys(dims).forEach(k=>dims[k]+=weights[sc.id]*sc.vector[k]));
+    const labels={material:'Living standards',equality:'Equality',autonomy:'Autonomy',meaning:'Meaning',stability:'Stability',safety:'Safety',skills:'Skill retention'};
+    $('#outcome-narrative').innerHTML=`<h4>Most weighted branch: ${top.name}</h4><p style="color:#9fb5bb;font-size:.83rem;margin:0">${top.desc}</p><div class="dimension-grid">${Object.entries(dims).map(([k,v])=>`<div class="dimension"><span>${labels[k]}</span><span class="bar-track"><span class="bar-fill" style="width:${v.toFixed(0)}%"></span></span><span>${v.toFixed(0)}</span></div>`).join('')}</div>`;
+  }
+
+try{initialize();}catch(e){showError(e);}
+})();
+</script>
+</body>
+</html>

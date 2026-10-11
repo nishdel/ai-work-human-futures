@@ -1,0 +1,37 @@
+<section id="prepare-section" class="panel panel-pad">
+ <div class="section-title"><div><div class="kicker">Your preparation · optional &amp; private</div><h2>Explore your work. Build useful options.</h2><p>Choose a role, confirm your tasks, then answer four short questions. Students and career changers can choose a target role.</p></div><button class="btn small" id="clear-profile">Clear my profile</button></div>
+ <div class="profile-fields">
+ <label class="field">1. Current or target role<select id="career-role"><option value="">Choose a role…</option></select></label>
+ <label class="field">Planning year<select id="planning-year"><option>2030</option><option selected>2035</option><option>2040</option></select></label>
+ </div>
+ <p id="role-intro" class="desc">No career or preparation answers are assumed.</p>
+ <div id="task-step" hidden>
+ <h3>2. Does this task mix describe your work?</h3>
+ <p class="privacy">These starting shares are illustrative author assumptions, not measured time use. Adjust relative amounts; they are normalized to 100%. A job title does not define your tasks.</p>
+ <div id="task-editor"></div>
+ <p id="task-total" class="status-line"></p>
+ <label class="checkline"><input type="checkbox" id="confirm-tasks"> I have reviewed this task mix</label>
+ <p id="personal-intro" class="notice" hidden></p>
+ <details><summary>Role sources and mapping assumptions</summary><div id="role-provenance"></div></details>
+ <h3>3. What can you draw on?</h3>
+ <div id="questionnaire" class="question-grid"></div>
+ <details><summary>Optional context and local note</summary><div id="optional-questions" class="question-grid"></div><label class="field">Unscored note, kept in this page session<textarea id="profile-note" maxlength="400" rows="3" placeholder="An optional reminder for yourself"></textarea></label><p class="privacy">Your note never changes the score. It is excluded from scenario exports unless you explicitly include your profile.</p><p id="note-preview"></p></details>
+ </div>
+ <div id="career-results" class="career-results" aria-live="polite"><p class="notice">Choose a role to explore exposure. Scores remain incomplete until you confirm tasks and answer the required questions.</p></div>
+ <label class="field" id="comparison-label">Compare with one alternative role<select id="alternative-role"><option value="">No comparison</option></select></label>
+ <div id="career-comparison"></div><p class="privacy">Both roles use the same scenario, planning year and preparation answers. Alternative roles use their labeled illustrative task mix. Retraining cost, job availability and individual suitability are not fully modeled. No role is permanently AI-proof.</p>
+ <details id="score-method"><summary>How this is calculated · career method 1.0.0</summary>
+ <p><b>Published evidence:</b> O*NET describes U.S. occupations. The ILO studies GenAI exposure. Neither supplies or validates this app's scores.</p>
+ <p><b>Author/model assumptions:</b> task shares, mappings, domain curves and all scoring weights. These are editable planning assumptions, not statistical estimates. Physical work, safety and regulation already act inside domain curves; no extra bonuses are added.</p>
+ <p><b>Visitor answers:</b> your confirmed tasks and anchored preparation choices. Missing answers are not zeros.</p>
+ <p>Task exposure = sum of normalized task shares × each mapped domain's deterministic curve at the selected year. Technical capability and actual substitution are calculated separately. It is not unemployment probability.</p>
+ <div id="weight-table"></div>
+ <p>Preparation = weighted average of answered components. All four required answers are needed for a score. Optional unanswered components are omitted and the remaining weights are renormalized. Resource constraints are not personal failings.</p>
+ <p>Resilience = 75% × preparation + 25% × (100 − modeled actual task substitution). Scores are rounded to whole points; they are not statistical confidence estimates or measures of human worth or hiring suitability.</p>
+ <p><b>Worked example:</b> with all required answers at 50 and optional answers omitted, preparation is 50. If modeled actual substitution is 60%, resilience is round(0.75 × 50 + 0.25 × 40) = 48. A fully prepared person can still have high exposure.</p>
+ <p>Source coverage and assumption sensitivity are shown separately from scores. Try different task mixes and scenarios; there is no invented confidence interval.</p>
+ </details>
+ <p class="privacy">Profile answers stay in page memory by default. No accounts, analytics, storage or AI API. The app does not transmit your answers; the hosting provider may receive ordinary request metadata. Opening a source link contacts that website. Clearing your profile cannot erase copies you previously exported.</p>
+</section>
+<section id="evidence-section" class="panel panel-pad"><div class="kicker">Evidence &amp; its limits</div><h2>Recent AI evidence — curated, not a live feed</h2><p id="evidence-status" class="notice"></p><p class="privacy">A small selection of verified historical research, not comprehensive current news. Cards do not change any model parameter or visitor setting. Announcements, demonstrations, independent tests and deployment evidence are different evidence types.</p><div id="evidence-cards" class="evidence-cards"></div></section>
+<section id="glossary-section" class="panel panel-pad"><div class="kicker">Control guide</div><h2>What each assumption means</h2><p class="privacy">0–100 describes a relative assumption setting. Pace controls shift milestone dates, not measured growth rates.</p><div id="glossary"></div></section>
