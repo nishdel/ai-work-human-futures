@@ -1,6 +1,6 @@
 # Contributing
 
-Preserve the plain HTML/CSS/JavaScript design, deterministic model and offline build. Read METHOD.md before changing arithmetic. Inspect Git status and preserve unrelated work.
+Preserve the plain HTML/CSS/JavaScript design, deterministic model and offline build. Read MODEL.md before changing arithmetic. Inspect Git status and preserve unrelated work.
 
 Use an existing, verified OmniLAB route for bounded substantive implementation when available. Declare relevant files, expected output and independent acceptance checks; run one local inference at a time within the current resource budget. Do not install or substitute models, change inference settings or modify development infrastructure for this application. After a bounded retry, record the concrete blocker and complete suitable work directly.
 

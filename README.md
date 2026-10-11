@@ -2,7 +2,7 @@
 
 [Open the simulator](https://nishdel.github.io/ai-work-human-futures/) · [Download the offline HTML](https://nishdel.github.io/ai-work-human-futures/ai-work-human-futures-offline.html)
 
-An educational scenario lab for AI capability, deployment, remaining human work and social outcomes. It preserves a 15-domain, 240-path seeded model and adds an optional career preparation flow. **It is a planning aid, not a forecast, unemployment probability or hiring tool.**
+An illustrative scenario explorer for AI capability, deployment, remaining human work and social outcomes. It preserves a 15-domain, 240-path seeded model and adds an optional career preparation flow. **It is not a validated forecast, unemployment probability or hiring tool.**
 
 ## Run
 
@@ -20,6 +20,14 @@ Preview: `http://127.0.0.1:4178/ai-work-human-futures/`. Build and unit tests us
 
 Optional browser checks use an already installed Playwright package and browsers: `npm run test:browser`. Set `QA_BROWSER` to `chromium` or `firefox`; `PLAYWRIGHT_MODULE_PATH`, `BROWSER_EXECUTABLE`, `QA_OUTPUT_DIR` and `PREVIEW_URL` can point to existing installations/output locations. Start the preview server first. Nothing automatically installs browsers or dependencies.
 
+## Use and controls
+
+1. Choose one of six technology presets, then move sliders to explore assumptions. Left/right meanings and a short explanation appear beside every slider; **Explain** opens its fuller on-page entry. Charts recalculate automatically; **Recalculate** retries or refreshes the current assumptions.
+2. Compare global curves, domain timelines and the selected domain. Change the timeline metric or threshold to inspect different milestones. Sensitivity changes one assumption at a time.
+3. Choose a social preset or adjust the eight social sliders. These change heuristic social weights, not technology curves.
+4. Optionally choose a role, review its task mix and answer preparation questions. The public default has no personal profile.
+5. Use **Export** / **Import** to save or restore scenario JSON. Exports exclude personal answers unless explicitly included. **Reset** restores technology and social defaults while preserving your entered profile; **Clear my profile** removes answers and notes. Printing omits the profile.
+
 ## What is included
 
 - Six technology and four social presets, explained controls and accessible glossary links.
@@ -29,7 +37,7 @@ Optional browser checks use an already installed Playwright package and browsers
 - Strict versioned import/export, including explicit legacy-v2 migration.
 - Three verified historical evidence cards with dates, limitations and no automatic model changes.
 
-The interface explains published evidence, author assumptions and visitor answers separately. Read [METHOD.md](METHOD.md), [DATA-LICENSE.md](DATA-LICENSE.md) and [CHECKS.md](CHECKS.md).
+The interface explains published evidence, author assumptions and visitor answers separately. Read [MODEL.md](MODEL.md), [DATA-LICENSE.md](DATA-LICENSE.md) and [TESTING.md](TESTING.md).
 
 ## Privacy
 
@@ -39,4 +47,4 @@ Answers and notes stay in page memory. There are no analytics, accounts, cookies
 
 The bundled snapshot was reviewed on 11 October 2026; included publications are from 2025 and are labeled historical. Automatic collection is **disabled**. A future workflow could collect and deduplicate primary-source candidates, propose a justified parameter change, run same-seed before/after tests, and require maintainer review before a versioned release. Collection must never overwrite a visitor's scenario. No scheduled collector is shipped.
 
-Code is MIT. O*NET-derived occupational descriptions remain under CC BY 4.0 with attribution; see the separate data notice.
+The existing [MIT license](LICENSE) is preserved. O*NET-derived occupational descriptions remain under CC BY 4.0 with attribution; see [DATA-LICENSE.md](DATA-LICENSE.md).
