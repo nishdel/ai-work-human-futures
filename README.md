@@ -1,5 +1,7 @@
 # AI, Work & Human Futures
 
+[Open the simulator](https://nishdel.github.io/ai-work-human-futures/) · [Download the offline HTML](https://nishdel.github.io/ai-work-human-futures/ai-work-human-futures-offline.html)
+
 An educational scenario lab for AI capability, deployment, remaining human work and social outcomes. It preserves a 15-domain, 240-path seeded model and adds an optional career preparation flow. **It is a planning aid, not a forecast, unemployment probability or hiring tool.**
 
 ## Run
