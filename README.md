@@ -4,6 +4,34 @@
 
 An illustrative scenario explorer for AI capability, deployment, remaining human work and social outcomes. It preserves a 15-domain, 240-path seeded model and adds an optional career preparation flow. **It is not a validated forecast, unemployment probability or hiring tool.**
 
+## Screenshots
+
+Captured from the running [public simulator](https://nishdel.github.io/ai-work-human-futures/) on 12 October 2026, with the career profile and personal answers left blank. These are genuine browser captures, losslessly optimized as PNGs. Results illustrate assumptions; they are not validated forecasts.
+
+**Main dashboard.** The default Central continuation scenario, preset controls and headline model milestones.
+
+![Main simulator dashboard with Central continuation and model milestones](docs/screenshots/main-dashboard.png)
+
+**Interactive sliders.** Capability has been moved from 55 to 56; endpoint meanings, short explanations and Explain links remain visible beside the recalculated curves.
+
+![Interactive assumption sliders and the recalculated global chart](docs/screenshots/interactive-sliders.png)
+
+**AI capability charts.** Model-generated ranges for the 80% technical-capability threshold across 15 domains, with software and AI research detail.
+
+![Domain timelines for 80 percent technical capability and selected software domain details](docs/screenshots/ai-capability-charts.png)
+
+**Scenario comparison.** Rapid recursive progress, with its assumption differences from Central continuation expanded and its recalculated results visible.
+
+![Rapid recursive progress settings compared with the central reference scenario](docs/screenshots/scenario-comparison.png)
+
+**Human work projections.** Technical capability, actual task substitution and remaining human work through 2100. Task substitution is not an unemployment probability.
+
+![Global curves showing technical capability, actual substitution and remaining human work](docs/screenshots/human-work-projections.png)
+
+**Human future scenarios.** Balanced social assumptions weight alternative futures and illustrative welfare dimensions. These weights are heuristics, not measured probabilities.
+
+![Social assumption sliders, future scenario weights and human welfare dimensions](docs/screenshots/human-future-scenarios.png)
+
 ## Run
 
 Open `ai-work-human-futures-offline.html` directly in a browser. It works under `file://` with networking disabled. `index.html` is the identical self-contained static-site build, compatible with a GitHub Pages repository subpath. No installation, login, AI service or backend is needed.
